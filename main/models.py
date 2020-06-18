@@ -5,11 +5,13 @@ from authentication.models import User
 
 
 class Farmer(BaseAbstractModel):
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
 
 
 class Manufacturer(BaseAbstractModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=255, null=False,blank=False)
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
@@ -19,7 +21,9 @@ class Manufacturer(BaseAbstractModel):
     def __str__(self):
         return 'Manufacturer - %s %s'%(self.name, self.email)
 
+
 class Distributor(BaseAbstractModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
     image = models.ImageField(upload_to='profiles/distributor',default='avatar.png')
 
