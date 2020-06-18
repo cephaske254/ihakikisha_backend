@@ -24,13 +24,12 @@ class Distributor(BaseAbstractModel):
     image = models.ImageField(upload_to='profiles/distributor',default='avatar.png')
     
 
-
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
     description = models.TextField(null=False,blank=False)
     composition = models.TextField(null=False,blank=False)
-    image = models.ImageField(upload_to='',null=False, blank=False)
+    image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
@@ -50,6 +49,22 @@ class Product(models.Model):
         rating = round(statistics.mean(raw_ratings),1)
         return rating
 
+
+class Shop(models.Model):
+    name = models.CharField(max_length=255, null=False,blank=False)
+    phone = models.IntegerField(blank=False, null=False)
+    location = models.CharField(max_length=255, null=False,blank=False)
+    email = models.CharField(max_length=255)
+
+
+class Package(models.Model):
+    products = models.ManyToManyField(Product)
+    distributor = models.ForeignKey(User, on_delete=models.CASCADE)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+
+    unique_together = 'products'
+
 class Rating(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE,primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -67,8 +82,3 @@ class Rating(models.Model):
             ratings.append(0)
         return ratings
 
-class Shop(models.Model):
-    name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
-    location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)

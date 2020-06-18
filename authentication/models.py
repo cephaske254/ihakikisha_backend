@@ -1,70 +1,22 @@
 from django.db import models
 from utils.models import BaseAbstractModel
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, AbstractUser
-
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from utils.models import UserManager
 # Create your models here.
 
-# Create your models here.
-class UserManager(BaseUserManager):
-    def create_user(self,
-                    email=None,
-                    first_name=None,
-                    last_name=None,
-                    password=None,
-                    role="AP"):
-        if not first_name:
-            raise ValueError('Firstname is required')
 
-        if not last_name:
-            raise ValueError('Lastname is required')
-
-        if not email:
-            raise ValueError('Email is required')
-
-        if not password:
-            raise ValueError('Password is required')
-
-        if not role:
-            raise ValueError('Role is required')
-
-        user = self.model(
-            email=self.normalize_email(email),
-            username=self.normalize_email(email),
-            first_name=first_name,
-            last_name=last_name
-        )
-
-        user.set_password(password)
-        user.role = role
-        user.save()
-        return user
-
-    def create_superuser(
-            self, first_name=None, last_name=None, email=None, password=None):
-        """Create a `User` who is also a superuser"""
-        if not first_name:
-            raise TypeError('Superusers must have a first name.')
-
-        if not last_name:
-            raise TypeError('Superusers must have a last name.')
-
-        if not email:
-            raise TypeError('Superusers must have an email address.')
-
-        if not password:
-            raise TypeError('Superusers must have a password.')
-
-        user = self.model(
-            first_name=first_name, last_name=last_name,
-            email=self.normalize_email(email), role='LA')
-        user.is_staff = True
-        user.is_superuser = True
-        user.is_active = True
-        user.is_verified = True
-        user.set_password(password)
-        user.save()
-
-class User(AbstractUser, BaseAbstractModel):
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(
+        verbose_name='email address',
+        max_length=255,
+        unique=True,
+    )
+    first_name = models.CharField(max_length=30, blank=False, null=False)
+    last_name = models.CharField(max_length=30, blank=False,null=False)
+    active = models.BooleanField(default=True)
+    staff = models.BooleanField(default=False) # a admin user; non super-user
+    admin = models.BooleanField(default=False) # a superuser
+    superuser = models.BooleanField(default=False) # a superuser
     USER_TYPE_CHOICES =(
         ('A', 'admin'),
         ('M','manufacturer'),
@@ -72,4 +24,25 @@ class User(AbstractUser, BaseAbstractModel):
         ('D','distributor'),
     )
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20)
+    
     objects = UserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['user_type', 'first_name', 'last_name']
+    @property
+    def is_staff(self):
+        "Is the user a member of staff?"
+        return self.staff
+
+    @property
+    def is_admin(self):
+        "Is the user a admin member?"
+        return self.admin
+
+    @property
+    def is_active(self):
+        "Is the user active?"
+        return self.active
+    @property
+    def is_superuser(self):
+        "Is the user active?"
+        return self.superuser
