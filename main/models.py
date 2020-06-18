@@ -98,6 +98,13 @@ class Shop(models.Model):
     email = models.CharField(max_length=255)
 
 
+class Shop(models.Model):
+    name = models.CharField(max_length=255, null=False,blank=False)
+    phone = models.IntegerField(blank=False, null=False)
+    location = models.CharField(max_length=255, null=False,blank=False)
+    email = models.CharField(max_length=255)
+
+
 class Package(models.Model):
     products = models.ManyToManyField(Product)
     distributor = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -129,10 +136,3 @@ class Rating(models.Model):
         else:
             ratings.append(0)
         return ratings
-
-
-class Shop(models.Model):
-    name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
-    location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)
