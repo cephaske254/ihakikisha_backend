@@ -108,7 +108,7 @@ class Rating(models.Model):
     rating = models.PositiveIntegerField(null=False,blank=False)
     comment = models.TextField()
     
-    unique_together = 'user'
+    unique_together = ('user')
 
 
     @classmethod
