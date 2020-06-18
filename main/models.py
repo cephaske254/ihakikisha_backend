@@ -8,6 +8,10 @@ class Farmer(BaseAbstractModel):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
+    
+    @classmethod
+    def update_account(cls, user, image):
+        cls.objects.create()
 
 
 class Manufacturer(BaseAbstractModel):
