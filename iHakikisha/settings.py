@@ -17,7 +17,7 @@ DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='*')
 
 # Authentication class
-AUTH_USER_MODEL = 'main.User'
+AUTH_USER_MODEL = 'authentication.User'
 
 # Application definition
 
@@ -35,7 +35,8 @@ INSTALLED_APPS = [
 
     # Local Apps Below
     'main.apps.MainConfig',
-    'api.apps.ApiConfig',
+    'authentication.apps.AuthenticationConfig',
+    'utils.apps.UtilsConfig',
 ]
 
 REST_FRAMEWORK = {
