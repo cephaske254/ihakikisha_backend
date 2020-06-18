@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # Local Apps Below
     'main.apps.MainConfig',
     'authentication.apps.AuthenticationConfig',
+    'utils.apps.UtilsConfig',
 ]
 
 REST_FRAMEWORK = {

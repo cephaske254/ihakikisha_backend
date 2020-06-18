@@ -23,13 +23,12 @@ class Distributor(BaseAbstractModel):
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
     image = models.ImageField(upload_to='profiles/distributor',default='avatar.png')
 
-
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
     description = models.TextField(null=False,blank=False)
     composition = models.TextField(null=False,blank=False)
-    image = models.ImageField(upload_to='',null=False, blank=False)
+    image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -87,14 +86,30 @@ class Product(models.Model):
         return product
 
     
+
+class Shop(models.Model):
+    name = models.CharField(max_length=255, null=False,blank=False)
+    phone = models.IntegerField(blank=False, null=False)
+    location = models.CharField(max_length=255, null=False,blank=False)
+    email = models.CharField(max_length=255)
+
+
+class Package(models.Model):
+    products = models.ManyToManyField(Product)
+    distributor = models.ForeignKey(User, on_delete=models.CASCADE)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+
+    unique_together = 'products'
+
 class Rating(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE,primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField(null=False,blank=False)
     comment = models.TextField()
+    
+    unique_together = 'user'
 
-    class Meta:
-        unique_together = ('user',)
 
     @classmethod
     def save_rating(self):
