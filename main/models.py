@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from utils.models import BaseAbstractModel
 import statistics
 from authentication.models import User
@@ -15,7 +16,7 @@ class Farmer(BaseAbstractModel):
 
 
 class Manufacturer(BaseAbstractModel):
-    name = models.CharField(max_length=255, null=False,blank=False related_name='profile')
+    name = models.CharField(max_length=255, null=False,blank=False,)
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.EmailField(max_length=255)
@@ -29,11 +30,6 @@ class Manufacturer(BaseAbstractModel):
         manufacturer = cls.objects.create(name=name, phone=phone, location=location, email=email, logo=logo)
         manufacturer.save()
         return manufacturer
-        
-    @classmethod
-    def search_product(cls,query):
-        products= cls.object.filter(Q(product_product=query)).all()
-        return products
 
     @classmethod
     def update_product(cls,id, name, manufactured, qr_code, sold, date):
@@ -45,19 +41,6 @@ class Manufacturer(BaseAbstractModel):
         product.date = date or product.date
         product.save()
         return product
-
-    @classmethod
-    def get_product_by_id(cls, id):
-        return cls.objects.get(pk=id)
-
-    @receiver(post_save, sender=User)
-    def create_manufacturer_profile(sender, instance, created, **kwargs):
-        if created:
-            Manufacturer.ojects.create(name=instance)
-    
-    @receiver(post_save, sender=User)
-    def save_manufacturer_profile(sender, instance, **kwargs):
-       instance.profile.save()
 
     def __str__(self):
         return self.username.username
@@ -246,28 +229,6 @@ class Product(models.Model):
     def get_product_by_id(cls,id):
         product = cls.objects.get(id=id)
         return product
-
-
-class Product(models.Model):
-    name = models.CharField(max_length=255, null=False)
-    manufactured = models.DateField()
-    product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
-    qr_code = models.CharField(max_length=500)
-    sold = models.BooleanField(default=False)
-    date = models.DateTimeField(auto_now_add=True)
-
-    @classmethod
-    def search_product(cls,search_term):
-        product = cls.object.filter(Q(product.name=search_term))
-        return product
-
-    @property
-    def average_rating(self):
-        product_id = self.id
-        raw_ratings = Rating.get_products_rating(self.id)
-        rating = round(statistics.mean(raw_ratings),1)
-        return rating
-
 
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False, unique=True)
