@@ -5,14 +5,12 @@ from authentication.models import User
 
 
 class Farmer(BaseAbstractModel):
-    
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
 
 
 class Manufacturer(BaseAbstractModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
-    name = models.CharField(max_length=255, null=False,blank=False)
+    name = models.CharField(max_length=255, null=False,blank=False related_name='profile')
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.CharField(max_length=255)
@@ -21,41 +19,63 @@ class Manufacturer(BaseAbstractModel):
     def __str__(self):
         return 'Manufacturer - %s %s'%(self.name, self.email)
 
+    @receiver(post_save, sender=User)
+    def create_manufacturer_profile(sender, instance, created, **kwargs):
+        if created:
+            Manufacturer.ojects.create(name=instance)
+    
+    @receiver(post_save, sender=User)
+    def save_manufacturer_profile(sender, instance, **kwargs):
+       instance.profile.save()
+
+    def __str__(self):
+        return self.username.username
+
+    @classmethod
+    def search_product(cls,search_term):
+        product_name = cls.object.filter(Q(product_product=search_term))
+        return product_name
+
+    @classmethod
+    def save_distributor(cls,user,manufacturer,image):
+        distributor = cls(user=user,manufacturer=manufacturer,image=image)
+        distributor.save()
+        return distributor
+
+    @classmethod
+    def update_product(cls,id, name, manufactured, qr_code, sold, date):
+        product = cls.get_product_by_id(id)
+        product.name = name or product.name
+        product.manufactured = manufactured or product.manufactured
+        product.qr_code = qr_code or product.qr_code
+        product.sold = sold or product.sold
+        product.date = date or product.date
+        product.save()
+        return product
+
+    @classmethod
+    def delete_productset(cls,ProductSet):
+        cls.objects.filter(ProductSet=ProductSet).delete()
+
 
 class Distributor(BaseAbstractModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
     image = models.ImageField(upload_to='profiles/distributor',default='avatar.png')
+    
 
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
     description = models.TextField(null=False,blank=False)
     composition = models.TextField(null=False,blank=False)
+    qr_code = models.CharField(max_length=500)
     image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
-
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
 
-
-class Product(models.Model):
-    name = models.CharField(max_length=255, null=False)
-    manufactured = models.DateField()
-    product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
-    qr_code = models.CharField(max_length=500)
-    sold = models.BooleanField(default=False)
-    date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
+        def __str__(self):
         return self.name
-
-    @property
-    def average_rating(self):
-        product_id = self.id
-        raw_ratings = Rating.get_products_rating(self.id)
-        rating = round(statistics.mean(raw_ratings),1)
-        return rating
 
     @classmethod
     def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
@@ -89,7 +109,22 @@ class Product(models.Model):
         product = cls.objects.get(id=id)
         return product
 
-    
+
+class Product(models.Model):
+    name = models.CharField(max_length=255, null=False)
+    manufactured = models.DateField()
+    product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
+    qr_code = models.CharField(max_length=500)
+    sold = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def average_rating(self):
+        product_id = self.id
+        raw_ratings = Rating.get_products_rating(self.id)
+        rating = round(statistics.mean(raw_ratings),1)
+        return rating
+
 
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False)
@@ -111,13 +146,6 @@ class Rating(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     rating = models.PositiveIntegerField(null=False,blank=False)
     comment = models.TextField()
-    
-    unique_together = ('user')
-
-
-    @classmethod
-    def save_rating(self):
-        self.save()
 
     @classmethod
     def get_products_rating(cls, product_id):
@@ -130,9 +158,3 @@ class Rating(models.Model):
             ratings.append(0)
         return ratings
 
-
-class Shop(models.Model):
-    name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
-    location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)
