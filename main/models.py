@@ -14,7 +14,7 @@ class Farmer(BaseAbstractModel):
         return profile
 
 class Manufacturer(BaseAbstractModel):
-    name = models.CharField(max_length=255, null=False,blank=False related_name='profile')
+    name = models.CharField(max_length=255, null=False,blank=False)
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.EmailField(max_length=255)
@@ -40,53 +40,9 @@ class Manufacturer(BaseAbstractModel):
         return manufacturer
 
     @classmethod
-<<<<<<< HEAD
     def get_manufacturer_by_id(cls,manufactuer_id):
         manufacturer = cls.objects.get(pk=manufactuer_id)
         return manufacturer
-=======
-    def get_product_by_id(cls, id):
-        return cls.objects.get(pk=id)
-
-    @receiver(post_save, sender=User)
-    def create_manufacturer_profile(sender, instance, created, **kwargs):
-        if created:
-            Manufacturer.ojects.create(name=instance)
-    
-    @receiver(post_save, sender=User)
-    def save_manufacturer_profile(sender, instance, **kwargs):
-       instance.profile.save()
-
-    def __str__(self):
-        return self.username.username
-
-    @classmethod
-    def search_product(cls,search_term):
-        product_name = cls.object.filter(Q(product_product=search_term))
-        return product_name
-
-    @classmethod
-    def save_distributor(cls,user,manufacturer,image):
-        distributor = cls(user=user,manufacturer=manufacturer,image=image)
-        distributor.save()
-        return distributor
-
-    @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold, date):
-        product = cls.get_product_by_id(id)
-        product.name = name or product.name
-        product.manufactured = manufactured or product.manufactured
-        product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.date = date or product.date
-        product.save()
-        return product
-
-    @classmethod
-    def delete_productset(cls,ProductSet):
-        cls.objects.filter(ProductSet=ProductSet).delete()
-
->>>>>>> eec8c39150a42d6d4018648d9f0b40b3e6ae07e4
 
 class Distributor(BaseAbstractModel):
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
@@ -278,27 +234,6 @@ class Product(models.Model):
         return products
 
 
-class Product(models.Model):
-    name = models.CharField(max_length=255, null=False)
-    manufactured = models.DateField()
-    product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
-    qr_code = models.CharField(max_length=500)
-    sold = models.BooleanField(default=False)
-    date = models.DateTimeField(auto_now_add=True)
-
-    @classmethod
-    def search_product(cls,search_term):
-        product = cls.object.filter(Q(product.name=search_term))
-        return product
-
-    @property
-    def average_rating(self):
-        product_id = self.id
-        raw_ratings = Rating.get_products_rating(self.id)
-        rating = round(statistics.mean(raw_ratings),1)
-        return rating
-
-
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False, unique=True)
     phone = models.IntegerField(blank=False, null=False, unique=True)
@@ -374,20 +309,12 @@ class Rating(models.Model):
     unique_together = 'user'
 
     @classmethod
-<<<<<<< HEAD
     def save_rating(cls,product_id,user_id,rating,comment):
         product = Product.get_product_by_id(product_id)
         user = User.objects.get(pk=user_id)
         rating = cls(user=user,product=product,rating=rating,comment=comment)
         rating.save()
         return rating
-=======
-    def save_rating(cls,product,user,rating,comment):
-        rating = cls(user=user,product=product,rating=rating,comment=comment)
-        rating.save()
-        return rating
-
->>>>>>> eec8c39150a42d6d4018648d9f0b40b3e6ae07e4
 
     @classmethod
     def get_products_rating(cls, product_id):
