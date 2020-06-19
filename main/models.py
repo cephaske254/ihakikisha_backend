@@ -10,8 +10,9 @@ class Farmer(BaseAbstractModel):
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
     @classmethod
-    def update_account(cls, user, image):
-        cls.objects.create()
+    def update_farmer(cls, user, image):
+        profile = cls.objects.create(user=user, image=image).save()
+        return profile
 
 
 class Manufacturer(BaseAbstractModel):
@@ -24,6 +25,32 @@ class Manufacturer(BaseAbstractModel):
 
     def __str__(self):
         return 'Manufacturer - %s %s'%(self.name, self.email)
+    
+    @classmethod
+    def add_manufacturer(cls, name, phone, location, email, logo):
+        manufacturer = cls.objects.create(name=name, phone=phone, location=location, email=email, logo=logo)
+        manufacturer.save()
+        return manufacturer
+        
+    @classmethod
+    def search_product(cls,query):
+        products= cls.object.filter(Q(product_product=query)).all()
+        return products
+
+    @classmethod
+    def update_product(cls,id, name, manufactured, qr_code, sold, date):
+        product = cls.get_product_by_id(id)
+        product.name = name or product.name
+        product.manufactured = manufactured or product.manufactured
+        product.qr_code = qr_code or product.qr_code
+        product.sold = sold or product.sold
+        product.date = date or product.date
+        product.save()
+        return product
+
+    @classmethod
+    def get_product_by_id(cls, id):
+        return cls.objects.get(pk=id)
 
 
 class Distributor(BaseAbstractModel):
@@ -38,9 +65,40 @@ class ProductSet(models.Model):
     composition = models.TextField(null=False,blank=False)
     image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
-
+    
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
+
+    @classmethod
+    def create_product_set(cls,name,manufactured,product_set,qr_code,sold,date):
+        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
+        product.save()
+        return product
+
+    @classmethod
+    def update_product_set(cls,id, name, description, composition, image):
+        product_set = cls.get_product_set_by_id(id)
+        product_set.name = name or product_set.name
+        product_set.composition = composition or product_set.composition
+        product_set.description = sold or product_set.description
+        product_set.image = date or product_set.image
+        product.save()
+        return product_set
+
+    @classmethod
+    def delete_product_set(cls,id):
+        product_set = cls.get_product_set_by_id(id)
+        product_set.delete()
+
+    @classmethod
+    def get_all(cls):
+        product_sets = cls.objects.all()
+        return product_sets
+
+    @classmethod
+    def get_product_set_by_id(cls,id):
+        product_set = cls.objects.get(pk=id)
+        return product_set
 
 
 class Product(models.Model):
@@ -65,6 +123,37 @@ class Product(models.Model):
     def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
         product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
         product.save()
+        return product
+    
+    @classmethod
+    def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
+        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
+        product.save()
+        return product
+
+    @classmethod
+    def update_product(cls,id, name, manufactured, qr_code, sold):
+        product = cls.get_product_by_id(id)
+        product.name = name or product.name
+        product.manufactured = manufactured or product.manufactured
+        product.qr_code = qr_code or product.qr_code
+        product.sold = sold or product.sold
+        product.save()
+        return product
+
+    @classmethod
+    def get_all_products(cls):
+        products = cls.objects.all()
+        return products
+
+    @classmethod
+    def delete_product(cls,id):
+        product = cls.objects.get(id=id)
+        product.delete()
+
+    @classmethod
+    def get_product_by_id(cls,id):
+        product = cls.objects.get(id=id)
         return product
 
     @classmethod
@@ -93,7 +182,6 @@ class Product(models.Model):
         product = cls.objects.get(id=id)
         return product
 
-    
 
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False)
