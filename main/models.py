@@ -306,6 +306,8 @@ class Rating(models.Model):
     rating = models.PositiveIntegerField(null=False,blank=False)
     comment = models.TextField()
 
+    unique_together = 'user'
+
     @classmethod
     def save_rating(cls,product,user,rating,comment):
         rating = cls(user=user,product=product,rating=rating,comment=comment)
