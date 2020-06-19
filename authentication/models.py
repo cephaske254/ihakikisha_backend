@@ -23,7 +23,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('F','farmer'),
         ('D','distributor'),
     )
-    user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20)
+    user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20, default='F')
     
     objects = UserManager()
     USERNAME_FIELD = 'email'
@@ -42,6 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_active(self):
         "Is the user active?"
         return self.active
+
     @property
     def is_superuser(self):
         "Is the user active?"
