@@ -1,8 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import BaseUserManager
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 import uuid
 
-class BaseAbstractModel(models.Model): 
+class BaseAbstractModel(AbstractBaseUser): 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
 
     class Meta:

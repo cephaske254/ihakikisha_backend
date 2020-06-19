@@ -5,7 +5,7 @@ from utils.models import UserManager
 # Create your models here.
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(BaseAbstractModel, PermissionsMixin):
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -23,7 +23,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('F','farmer'),
         ('D','distributor'),
     )
-    user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20, default='F')
+    user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20, null=False, blank=False)
     
     objects = UserManager()
     USERNAME_FIELD = 'email'
