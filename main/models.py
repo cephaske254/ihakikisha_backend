@@ -266,7 +266,3 @@ class Rating(models.Model):
         else:
             ratings.append(0)
         return ratings
-<<<<<<< HEAD
-=======
-
->>>>>>> 5bd99f36c879e966215966afcba9560b2bf03ad5
