@@ -27,6 +27,35 @@ class Distributor(BaseAbstractModel):
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
     image = models.ImageField(upload_to='profiles/distributor',default='avatar.png')
 
+    @classmethod
+    def save_distributor(cls,user,manufacturer,image):
+        distributor = cls(user=user,manufacturer=manufacturer,image=image)
+        distributor.save()
+        return distributor
+
+    @classmethod
+    def get_distributor(cls,user):
+        distributor = cls.objects.filter(id=user.id).first()
+        return distributor
+
+    @classmethod
+    def update_distributor_info(cls,user,manufacturer,image):
+        distributor = cls.get_distributor(user)
+        distributor.manufacturer = manufacturer or distributor.manufacturer
+        distributor.image = image or distributor.image
+        distributor.save()
+        return distributor
+
+    @classmethod
+    def get_manufacturer_distributor(cls,manufacturer):
+        distributors = cls.objects.filter(manufacturer=manufacturer.id).all()
+        return distributors
+
+    @classmethod
+    def remove_distributor(cls,user):
+        distributor = cls.objects.get(user=user)
+        distributor.delete()
+
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
@@ -130,9 +159,3 @@ class Rating(models.Model):
             ratings.append(0)
         return ratings
 
-
-class Shop(models.Model):
-    name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
-    location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)
