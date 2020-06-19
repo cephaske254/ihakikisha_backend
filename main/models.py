@@ -100,6 +100,7 @@ class Distributor(BaseAbstractModel):
         distributor.save()
         return distributor
 
+
     @classmethod
     def get_distributor(cls,user):
         distributor = cls.objects.filter(id=user.id).first()
@@ -131,12 +132,11 @@ class ProductSet(models.Model):
     qr_code = models.CharField(max_length=500)
     image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
-<<<<<<< HEAD
+
+
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
 
-        def __str__(self):
-=======
     
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
@@ -182,7 +182,6 @@ class Product(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
->>>>>>> d59b70041c7f4e54bb2c4269e13148b5eb24a3e4
         return self.name
 
     @classmethod
@@ -248,7 +247,6 @@ class Product(models.Model):
         product = cls.objects.get(id=id)
         return product
 
-<<<<<<< HEAD
 
 class Product(models.Model):
     name = models.CharField(max_length=255, null=False)
@@ -258,6 +256,11 @@ class Product(models.Model):
     sold = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
+    @classmethod
+    def search_product(cls,search_term):
+        product = cls.object.filter(Q(product.name=search_term))
+        return product
+
     @property
     def average_rating(self):
         product_id = self.id
@@ -265,8 +268,6 @@ class Product(models.Model):
         rating = round(statistics.mean(raw_ratings),1)
         return rating
 
-=======
->>>>>>> d59b70041c7f4e54bb2c4269e13148b5eb24a3e4
 
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False)
@@ -315,7 +316,3 @@ class Rating(models.Model):
         else:
             ratings.append(0)
         return ratings
-<<<<<<< HEAD
-
-=======
->>>>>>> d59b70041c7f4e54bb2c4269e13148b5eb24a3e4
