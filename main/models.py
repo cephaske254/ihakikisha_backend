@@ -307,6 +307,13 @@ class Rating(models.Model):
     comment = models.TextField()
 
     @classmethod
+    def save_rating(cls,product,user,rating,comment):
+        rating = cls(user=user,product=product,rating=rating,comment=comment)
+        rating.save()
+        return rating
+
+
+    @classmethod
     def get_products_rating(cls, product_id):
         results = cls.objects.filter(product = product_id).all()  
         ratings = []
