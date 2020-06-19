@@ -20,7 +20,7 @@ class Manufacturer(BaseAbstractModel):
     name = models.CharField(max_length=255, null=False,blank=False)
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
     logo = models.ImageField(upload_to='profiles/manufacturer',default='avatar.png')
 
     def __str__(self):
@@ -213,10 +213,19 @@ class Product(models.Model):
 
 
 class Shop(models.Model):
-    name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
+    name = models.CharField(max_length=255, null=False,blank=False, unique=True)
+    phone = models.IntegerField(blank=False, null=False, unique=True)
     location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    @classmethod
+    def add_shop(cls, name, phone, location, email):
+        shop = cls.objects.create(name=name,phone=phone, location=location, email=email, description=description)
+        shop.save()
+        return shop
+    class Meta:
+        unique_together=(('name','phone','location'),('name','location'))
 
 
 class Package(models.Model):

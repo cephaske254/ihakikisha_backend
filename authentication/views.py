@@ -5,11 +5,12 @@ from rest_framework.generics import CreateAPIView
 from . import serializers
 from authentication.models import User
 from django.contrib.auth.password_validation import validate_password 
-
+from rest_framework.permissions import AllowAny
 
 # Create your views here.
 class Register(CreateAPIView):
     serializer_class = serializers.UserSerializerMini
+    permission_classes = (AllowAny,)
     def validate(self, data):
         if validate_password(data.get('password')):
             return data
