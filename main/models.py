@@ -2,7 +2,7 @@ from django.db import models
 from utils.models import BaseAbstractModel
 import statistics
 from authentication.models import User
-
+from django.db.models import Q
 
 class Farmer(BaseAbstractModel):
     
@@ -10,10 +10,9 @@ class Farmer(BaseAbstractModel):
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
     @classmethod
-    def update_farmer(cls, user, image):
+    def add_farmer(cls, user, image):
         profile = cls.objects.create(user=user, image=image).save()
         return profile
-
 
 class Manufacturer(BaseAbstractModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
@@ -31,27 +30,21 @@ class Manufacturer(BaseAbstractModel):
         manufacturer = cls.objects.create(name=name, phone=phone, location=location, email=email, logo=logo)
         manufacturer.save()
         return manufacturer
-        
-    @classmethod
-    def search_product(cls,query):
-        products= cls.object.filter(Q(product_product=query)).all()
-        return products
 
     @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold, date):
-        product = cls.get_product_by_id(id)
-        product.name = name or product.name
-        product.manufactured = manufactured or product.manufactured
-        product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.date = date or product.date
-        product.save()
-        return product
+    def edit_manufacturer(cls,manufactuer_id, name, phone, location, email, logo):
+        manufacturer = cls.get_manufacturer_by_id(manufactuer_id)
+        manufacturer.name = name or manufacturer.name
+        manufacturer.phone = phone or manufacturer.phone
+        manufacturer.location = location or manufacturer.location
+        manufacturer.email = email or manufacturer.email
+        manufacturer.save()
+        return manufacturer
 
     @classmethod
-    def get_product_by_id(cls, id):
-        return cls.objects.get(pk=id)
-
+    def get_manufacturer_by_id(cls,manufactuer_id):
+        manufacturer = cls.objects.get(pk=manufactuer_id)
+        return manufacturer
 
 class Distributor(BaseAbstractModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
@@ -65,26 +58,30 @@ class Distributor(BaseAbstractModel):
         return distributor
 
     @classmethod
-    def get_distributor(cls,user):
-        distributor = cls.objects.filter(id=user.id).first()
+    def get_distributor_by_id(cls,distributor_id):
+        distributor = cls.objects.get(pk=distributor_id)
         return distributor
 
     @classmethod
-    def update_distributor_info(cls,user,manufacturer,image):
-        distributor = cls.get_distributor(user)
+    def update_distributor(cls,distributor_id,manufacturer,image):
+        distributor = cls.get_distributor_by_id(distributor_id) #user field
         distributor.manufacturer = manufacturer or distributor.manufacturer
         distributor.image = image or distributor.image
         distributor.save()
         return distributor
 
     @classmethod
-    def get_manufacturer_distributor(cls,manufacturer):
-        distributors = cls.objects.filter(manufacturer=manufacturer.id).all()
+    def get_manufacturer_distributor(cls,manufacturer_id):
+        distributors = cls.objects.filter(manufacturer=manufacturer_id).all()
         return distributors
 
     @classmethod
-    def remove_distributor(cls,user):
-        distributor = cls.objects.get(user=user)
+    def remove_distributor(cls,distributor_id):
+        distributor = cls.get_distributor_by_id(distributor_id)
+        user_id = distributor.user
+        user = User.objects.get(pk=distributor_id)
+        user.user_type = 'F'
+        user.save()
         distributor.delete()
 
 class ProductSet(models.Model):
@@ -99,14 +96,14 @@ class ProductSet(models.Model):
         return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
 
     @classmethod
-    def create_product_set(cls,name,manufactured,product_set,qr_code,sold,date):
-        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
-        product.save()
-        return product
+    def create_product_set(cls,manufacturer,name,description,composition, image):
+        product_set = cls.objects.create(manufacturer=manufacturer, name=name, description=description, composition=composition, image=image)
+        product_set.save()
+        return product_set
 
     @classmethod
-    def update_product_set(cls,id, name, description, composition, image):
-        product_set = cls.get_product_set_by_id(id)
+    def update_product_set(cls,product_set_id, name, description, composition, image):
+        product_set = cls.get_product_set_by_id(product_set_id)
         product_set.name = name or product_set.name
         product_set.composition = composition or product_set.composition
         product_set.description = sold or product_set.description
@@ -115,8 +112,8 @@ class ProductSet(models.Model):
         return product_set
 
     @classmethod
-    def delete_product_set(cls,id):
-        product_set = cls.get_product_set_by_id(id)
+    def delete_product_set(cls,product_id):
+        product_set = cls.get_product_set_by_id(product_id)
         product_set.delete()
 
     @classmethod
@@ -125,8 +122,8 @@ class ProductSet(models.Model):
         return product_sets
 
     @classmethod
-    def get_product_set_by_id(cls,id):
-        product_set = cls.objects.get(pk=id)
+    def get_product_set_by_id(cls,product_id):
+        product_set = cls.objects.get(pk=product_id)
         return product_set
 
 
@@ -149,24 +146,35 @@ class Product(models.Model):
         return rating
 
     @classmethod
-    def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
-        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
+    def create_product(cls,name,manufactured,product_set_id,qr_code):
+        product_set = ProductSet.get_product_set_by_id(product_set_id)
+
+        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code)
         product.save()
         return product
     
     @classmethod
-    def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
-        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
+    def create_product(cls,name,manufactured,product_set_id,qr_code,date):
+        product_set = ProductSet.get_product_set_by_id(product_set_id)
+        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,date=date)
         product.save()
         return product
 
     @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold):
-        product = cls.get_product_by_id(id)
+    def update_product(cls,product_id, name, manufactured, qr_code):
+        product_set = ProductSet.get_product_set_by_id(product_set_id)
+        product = cls.get_product_by_id(product_id)
+
         product.name = name or product.name
         product.manufactured = manufactured or product.manufactured
         product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
+        product.save()
+        return product
+
+    @classmethod
+    def set_as_sold(cls, product_id):
+        product = cls.get_product_by_id(product_id)
+        product.sold = True
         product.save()
         return product
 
@@ -186,13 +194,19 @@ class Product(models.Model):
         return product
 
     @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold, date):
+    def check_if_sold(cls, id):
         product = cls.get_product_by_id(id)
+        if product.sold == True:
+            return True
+        else:
+            False
+        
+    @classmethod
+    def update_product(cls,product_id, name, manufactured, qr_code):
+        product = cls.get_product_by_id(product_id)
         product.name = name or product.name
         product.manufactured = manufactured or product.manufactured
         product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.date = date or product.date
         product.save()
         return product
 
@@ -210,6 +224,16 @@ class Product(models.Model):
     def get_product_by_id(cls,id):
         product = cls.objects.get(id=id)
         return product
+
+    @classmethod
+    def search_products(cls, keywords):
+        products = cls.objects.filter(
+        Q(name__icontains=keywords) |
+        Q(product_set__name__icontains = keywords) |
+        Q(product_set__manufacturer__name__icontains = keywords) |
+        Q(product_set__name__icontains = keywords))
+        
+        return products
 
 
 class Shop(models.Model):
@@ -219,14 +243,28 @@ class Shop(models.Model):
     email = models.EmailField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
+    class Meta:
+        unique_together=(('name','phone','location'),('name','location'))
+    
     @classmethod
     def add_shop(cls, name, phone, location, email):
         shop = cls.objects.create(name=name,phone=phone, location=location, email=email, description=description)
         shop.save()
         return shop
-    class Meta:
-        unique_together=(('name','phone','location'),('name','location'))
 
+    @classmethod
+    def edit_shop(cls,shop_id, name, phone, location, email):
+        shop = cls.get_shop_by_id(shop_id)
+        shop.name = name or shop.name
+        shop.phone = phone or shop.phone
+        shop.location = location or shop.location
+        shop.email = email or shop.email
+        shop.save()
+        return shop
+
+    @classmethod
+    def get_shop_by_id(cls,shop_id):
+        return cls.objects.get(pk=shop_id)
 
 class Package(models.Model):
     products = models.ManyToManyField(Product,blank=True,
@@ -250,6 +288,18 @@ class Package(models.Model):
         package = cls(delivered=True, distributor=user)
         package.save()
         return package
+    
+    @classmethod
+    def remove_from_package(cls, package_id, product_id):
+        product = Product.get_product_by_id(product_id)
+        package = cls.get_package_by_id(package)
+        package.products.remove(product)
+        return package
+        
+    @classmethod
+    def get_package_by_id(cls, package_id):
+        package = cls.objects.get(package_id)
+        return package
 
 
 class Rating(models.Model):
@@ -262,12 +312,16 @@ class Rating(models.Model):
 
 
     @classmethod
-    def save_rating(self):
-        self.save()
+    def save_rating(cls,product_id,user_id,rating,comment):
+        product = Product.get_product_by_id(product_id)
+        user = User.objects.get(pk=user_id)
+        rating = cls(user=user,product=product,rating=rating,comment=comment)
+        rating.save()
+        return rating
 
     @classmethod
     def get_products_rating(cls, product_id):
-        results = cls.objects.filter(product = product_id).all()  
+        results = cls.get_products_rating(product_id)
         ratings = []
         if results is not None:
             for rating in results:
@@ -275,3 +329,9 @@ class Rating(models.Model):
         else:
             ratings.append(0)
         return ratings
+   
+    @classmethod
+    def get_products_rating(cls, product_id):
+        ratings = cls.objects.filter(product = product_id).all()
+        return ratings
+

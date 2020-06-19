@@ -12,7 +12,7 @@ class UserSerializerMini(serializers.ModelSerializer):
                 'write_only': True, 'validators':[validate_password]
                 },
             }
-            
+
     def create(self, validated_data):
         validated_data.pop('password_1')
         user = User.objects.create_user(**validated_data)
