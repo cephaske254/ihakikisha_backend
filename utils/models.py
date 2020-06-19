@@ -44,3 +44,6 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    def get_by_natural_key(self, email):
+        return self.get(**{self.model.USERNAME_FIELD: email}) 

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+
     ]
 }
 
@@ -81,7 +82,7 @@ WSGI_APPLICATION = 'iHakikisha.wsgi.application'
 
 DATABASES = {
         'default': dj_database_url.config(
-            default=config('DATABASE_URL',default='postgres://derrick:montolivo@localhost:5432/pro')
+            default=config('DATABASE_URL',default=config('LOCAL_DATABASE'))
         )
     }
 
