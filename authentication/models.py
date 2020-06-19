@@ -47,3 +47,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_superuser(self):
         "Is the user active?"
         return self.superuser
+
+
+    @classmethod
+    def add_user(cls, first_name, last_name, email, password, user_type):
+        user = cls.objects.create_user(first_name,last_name,email,password,user_type=user_type)
+        return user
+
+    @classmethod
+    def edit_user(cls,user_id, first_name, last_name, email):
+        user = User.objects.get(id=user_id)
+        if user:
+            user.first_name = first_name or user.first_name
+            user.last_name = first_name or user.last_name
+            user.email = email or user.email
+            user.save()
+            return user
+        return None

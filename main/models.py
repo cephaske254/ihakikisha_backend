@@ -102,20 +102,29 @@ class Shop(models.Model):
     email = models.CharField(max_length=255)
 
 
-class Shop(models.Model):
-    name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
-    location = models.CharField(max_length=255, null=False,blank=False)
-    email = models.CharField(max_length=255)
-
-
 class Package(models.Model):
-    products = models.ManyToManyField(Product)
-    distributor = models.ForeignKey(User, on_delete=models.CASCADE)
-    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product,blank=True,
+)
+    distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True,blank=True)
+    delivered = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
-    unique_together = 'products'
+    unique_together = ('products')
+
+    @classmethod
+    def add_to_package(cls, products, user):
+        product_list =[(product) for product in products]
+        package = cls.create_package(user)
+        package.products.add(*product_list)
+        return package
+    
+    @classmethod
+    def create_package(cls, user):
+        package = cls(delivered=True, distributor=user)
+        package.save()
+        return package
+
 
 class Rating(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE,primary_key=True)
