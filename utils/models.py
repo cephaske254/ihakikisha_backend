@@ -4,9 +4,6 @@ import uuid
 
 class BaseAbstractModel(AbstractBaseUser): 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
-    
-    USERNAME_FIELD = 'email'
-
     class Meta:
         abstract = True
 
