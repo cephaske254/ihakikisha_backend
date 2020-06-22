@@ -1,7 +1,7 @@
 from django.db import models
 from utils.models import BaseAbstractModel
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from utils.models import UserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AbstractUser
+from utils.models import UserManager, BaseAbstractModel
 # Create your models here.
 
 
@@ -11,6 +11,7 @@ class User(BaseAbstractModel, PermissionsMixin):
         max_length=255,
         unique=True,
     )
+    username = models.CharField(max_length=120, null=True, blank=True)
     first_name = models.CharField(max_length=30, blank=False, null=False)
     last_name = models.CharField(max_length=30, blank=False,null=False)
     active = models.BooleanField(default=True)
@@ -25,9 +26,10 @@ class User(BaseAbstractModel, PermissionsMixin):
     )
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20, null=False, blank=False)
     
-    objects = UserManager()
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_type', 'first_name', 'last_name']
+    objects = UserManager()
+
     @property
     def is_staff(self):
         "Is the user a member of staff?"
@@ -56,7 +58,7 @@ class User(BaseAbstractModel, PermissionsMixin):
 
     @classmethod
     def edit_user(cls,user_id, first_name, last_name, email):
-        user = User.objects.get(id=user_id)
+        user = cls.get_user_by_id(user_id)
         if user:
             user.first_name = first_name or user.first_name
             user.last_name = first_name or user.last_name
@@ -64,3 +66,11 @@ class User(BaseAbstractModel, PermissionsMixin):
             user.save()
             return user
         return None
+    
+    @classmethod
+    def get_user_by_id(cls, user_id):
+        try:
+            user = cls.objects.get(pk=user_id)
+            return user
+        except:
+            return None

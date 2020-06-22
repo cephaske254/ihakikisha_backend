@@ -3,20 +3,15 @@ from django.db.models import Q
 from utils.models import BaseAbstractModel
 import statistics
 from authentication.models import User
-
-
-class Farmer(BaseAbstractModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
-    image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
-    
-    @classmethod
-    def update_farmer(cls, user, image):
-        profile = cls.objects.create(user=user, image=image).save()
-        return profile
-
+from django.db.models import Q
 
 class Manufacturer(BaseAbstractModel):
+<<<<<<< HEAD
     name = models.CharField(max_length=255, null=False,blank=False,)
+=======
+    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
+    name = models.CharField(max_length=255, null=False,blank=False)
+>>>>>>> 270b9d347b1bd8a1868f8d2b420201e9495c08b9
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.EmailField(max_length=255)
@@ -24,6 +19,7 @@ class Manufacturer(BaseAbstractModel):
 
     def __str__(self):
         return 'Manufacturer - %s %s'%(self.name, self.email)
+<<<<<<< HEAD
     
     @classmethod
     def add_manufacturer(cls, name, phone, location, email, logo):
@@ -71,41 +67,19 @@ class Manufacturer(BaseAbstractModel):
     def delete_productset(cls,ProductSet):
         cls.objects.filter(ProductSet=ProductSet).delete()
 
+=======
+ 
+
+class Farmer(BaseAbstractModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
+    image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
+    
+>>>>>>> 270b9d347b1bd8a1868f8d2b420201e9495c08b9
 
 class Distributor(BaseAbstractModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
-    image = models.ImageField(upload_to='profiles/distributor',default='avatar.png')
     
-
-    @classmethod
-    def save_distributor(cls,user,manufacturer,image):
-        distributor = cls(user=user,manufacturer=manufacturer,image=image)
-        distributor.save()
-        return distributor
-
-
-    @classmethod
-    def get_distributor(cls,user):
-        distributor = cls.objects.filter(id=user.id).first()
-        return distributor
-
-    @classmethod
-    def update_distributor_info(cls,user,manufacturer,image):
-        distributor = cls.get_distributor(user)
-        distributor.manufacturer = manufacturer or distributor.manufacturer
-        distributor.image = image or distributor.image
-        distributor.save()
-        return distributor
-
-    @classmethod
-    def get_manufacturer_distributor(cls,manufacturer):
-        distributors = cls.objects.filter(manufacturer=manufacturer.id).all()
-        return distributors
-
-    @classmethod
-    def remove_distributor(cls,user):
-        distributor = cls.objects.get(user=user)
-        distributor.delete()
 
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
@@ -116,55 +90,19 @@ class ProductSet(models.Model):
     image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
 
-
     def __str__(self):
-        return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
-
-    
-    def __str__(self):
-        return '%s by %s'%(self.name,self.manufacturer.user.profile.name)
-
-    @classmethod
-    def create_product_set(cls,name,manufactured,product_set,qr_code,sold,date):
-        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
-        product.save()
-        return product
-
-    @classmethod
-    def update_product_set(cls,id, name, description, composition, image):
-        product_set = cls.get_product_set_by_id(id)
-        product_set.name = name or product_set.name
-        product_set.composition = composition or product_set.composition
-        product_set.description = sold or product_set.description
-        product_set.image = date or product_set.image
-        product.save()
-        return product_set
-
-    @classmethod
-    def delete_product_set(cls,id):
-        product_set = cls.get_product_set_by_id(id)
-        product_set.delete()
-
-    @classmethod
-    def get_all(cls):
-        product_sets = cls.objects.all()
-        return product_sets
-
-    @classmethod
-    def get_product_set_by_id(cls,id):
-        product_set = cls.objects.get(pk=id)
-        return product_set
+        return '%s by %s'%(self.name,self.manufacturer.name)
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255, null=False)
-    manufactured = models.DateField()
     product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
     qr_code = models.CharField(max_length=500)
     sold = models.BooleanField(default=False)
-    date = models.DateTimeField(auto_now_add=True)
+    manufactured = models.DateField(auto_now_add=False, auto_now=False)
+    date = models.DateField(auto_now_add=True)
 
     def __str__(self):
+<<<<<<< HEAD
         return self.name
 
     @classmethod
@@ -229,6 +167,10 @@ class Product(models.Model):
     def get_product_by_id(cls,id):
         product = cls.objects.get(id=id)
         return product
+=======
+        return '%s - (%s) | %s' %(self.product_set,self.pk, self.bought_not_bought)
+
+>>>>>>> 270b9d347b1bd8a1868f8d2b420201e9495c08b9
 
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False, unique=True)
@@ -237,37 +179,18 @@ class Shop(models.Model):
     email = models.EmailField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
-    @classmethod
-    def add_shop(cls, name, phone, location, email):
-        shop = cls.objects.create(name=name,phone=phone, location=location, email=email, description=description)
-        shop.save()
-        return shop
     class Meta:
         unique_together=(('name','phone','location'),('name','location'))
-
-
+    
 class Package(models.Model):
     products = models.ManyToManyField(Product,blank=True,
 )
-    distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
+    distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True,blank=True)
     delivered = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
     unique_together = ('products')
-
-    @classmethod
-    def add_to_package(cls, products, user):
-        product_list =[(product) for product in products]
-        package = cls.create_package(user)
-        package.products.add(*product_list)
-        return package
-    
-    @classmethod
-    def create_package(cls, user):
-        package = cls(delivered=True, distributor=user)
-        package.save()
-        return package
 
 
 class Rating(models.Model):
@@ -279,15 +202,8 @@ class Rating(models.Model):
     unique_together = 'user'
 
     @classmethod
-    def save_rating(cls,product,user,rating,comment):
-        rating = cls(user=user,product=product,rating=rating,comment=comment)
-        rating.save()
-        return rating
-
-
-    @classmethod
     def get_products_rating(cls, product_id):
-        results = cls.objects.filter(product = product_id).all()  
+        results = cls.get_products_rating(product_id)
         ratings = []
         if results is not None:
             for rating in results:
@@ -295,3 +211,4 @@ class Rating(models.Model):
         else:
             ratings.append(0)
         return ratings
+   
