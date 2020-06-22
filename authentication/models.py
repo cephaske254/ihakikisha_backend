@@ -25,9 +25,9 @@ class User(BaseAbstractModel, PermissionsMixin):
     )
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20, null=False, blank=False)
     
-    objects = UserManager()
-    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_type', 'first_name', 'last_name']
+    objects = UserManager()
+
     @property
     def is_staff(self):
         "Is the user a member of staff?"
@@ -56,7 +56,7 @@ class User(BaseAbstractModel, PermissionsMixin):
 
     @classmethod
     def edit_user(cls,user_id, first_name, last_name, email):
-        user = User.objects.get(id=user_id)
+        user = cls.get_user_by_id(user_id)
         if user:
             user.first_name = first_name or user.first_name
             user.last_name = first_name or user.last_name
@@ -64,3 +64,11 @@ class User(BaseAbstractModel, PermissionsMixin):
             user.save()
             return user
         return None
+    
+    @classmethod
+    def get_user_by_id(cls, user_id):
+        try:
+            user = cls.objects.get(pk=user_id)
+            return user
+        except:
+            return None
