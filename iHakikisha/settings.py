@@ -18,7 +18,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='*')
 
 # Authentication class
 AUTH_USER_MODEL = 'authentication.User'
-
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 # Application definition
 
 INSTALLED_APPS = [

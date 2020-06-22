@@ -4,11 +4,6 @@ import statistics
 from authentication.models import User
 from django.db.models import Q
 
-class Farmer(BaseAbstractModel):
-    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
-    image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
-    
-
 class Manufacturer(BaseAbstractModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=255, null=False,blank=False)
@@ -19,7 +14,13 @@ class Manufacturer(BaseAbstractModel):
 
     def __str__(self):
         return 'Manufacturer - %s %s'%(self.name, self.email)
+ 
+
+class Farmer(BaseAbstractModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
+    image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
+
 class Distributor(BaseAbstractModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
@@ -62,7 +63,7 @@ class Shop(models.Model):
 class Package(models.Model):
     products = models.ManyToManyField(Product,blank=True,
 )
-    distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True,blank=True)
+    distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True,blank=True)
     delivered = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)

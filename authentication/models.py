@@ -1,7 +1,7 @@
 from django.db import models
 from utils.models import BaseAbstractModel
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from utils.models import UserManager
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AbstractUser
+from utils.models import UserManager, BaseAbstractModel
 # Create your models here.
 
 
@@ -11,6 +11,7 @@ class User(BaseAbstractModel, PermissionsMixin):
         max_length=255,
         unique=True,
     )
+    username = models.CharField(max_length=120, null=True, blank=True)
     first_name = models.CharField(max_length=30, blank=False, null=False)
     last_name = models.CharField(max_length=30, blank=False,null=False)
     active = models.BooleanField(default=True)
@@ -25,6 +26,7 @@ class User(BaseAbstractModel, PermissionsMixin):
     )
     user_type = models.CharField(choices=USER_TYPE_CHOICES, max_length=20, null=False, blank=False)
     
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_type', 'first_name', 'last_name']
     objects = UserManager()
 
