@@ -2,9 +2,9 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('product-set/',views.ProductSet.as_view(),name='add_set'),
+    path('product-set/',views.ProductSets.as_view(),name='add_set'),
     path('product-set/<pk>/',views.ProductSetDetails.as_view(),name='update_set'),
-    path('products/',views.Product.as_view(),name='add_product'),
+    path('products/',views.Products.as_view(),name='add_product'),
     path('products/<pk>/',views.ProductDetails.as_view(),name='get_product'),
     path('distributors/', views.DistributorProfile.as_view()),
     path('distributors/<pk>', views.DistributorProfileDetail.as_view()),
