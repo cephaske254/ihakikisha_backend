@@ -5,11 +5,11 @@ from rest_framework.permissions import AllowAny
 from .models import *
 
 # Create your views here
-class AddProductSet(generics.RetrieveUpdateDestroyAPIView):
+class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSetSerializer
     queryset = ProductSet.objects.all()
 
-class ProductSetDetails(generics.ListCreateAPIView):
+class AddProductSet(generics.ListCreateAPIView):
     serializer_class = ProductSetSerializer
     queryset = ProductSet.objects.all()
 
