@@ -1,10 +1,32 @@
 from django.shortcuts import render
 from rest_framework import generics
+from .serializers import *
+from rest_framework.permissions import AllowAny
+from .models import *
 from . import serializers
 from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package
 from .permissions import IsOwner
 # Create your views here.
+
+class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProductSetSerializer
+    queryset = ProductSet.objects.all()
+
+class ProductSet(generics.ListCreateAPIView):
+    serializer_class = ProductSetSerializer
+    queryset = ProductSet.objects.all()
+
+
+class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    
+
+class Products(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    
 
 class DistributorProfile(generics.ListCreateAPIView):
     serializer_class = serializers.DistributorProfileSerializer
@@ -40,30 +62,33 @@ class FarmerProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     
-class ShopProfile(generics.ListCreateAPIView):
+class Shops(generics.ListCreateAPIView):
     serializer_class = serializers.ShopProfileSerializer
     queryset = Shop.objects.all()
 
 
-class ShopProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+class ShopDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ShopProfileSerializer
     queryset = Shop.objects.all()
+    
 
-class RatingsProfile(generics.ListCreateAPIView):
+class Ratings(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsProfileSerializer
     queryset = Rating.objects.all()
+    
 
-class RatingsProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RatingsProfileSerializer
     queryset = Rating.objects.all()
+    
 
-class PackageProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.PackageProfileSerializer
-    queryset = Package.objects.all()
-
-class PackageProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+class Packages(generics.ListCreateAPIView):
     serializer_class = serializers.PackageProfileSerializer
     queryset = Package.objects.all()
     
 
+class PackageDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.PackageProfileSerializer
+    queryset = Package.objects.all()
+    
 
