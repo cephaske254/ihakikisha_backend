@@ -1,10 +1,18 @@
 from django.db import models
+from django.db.models import Q
 from utils.models import BaseAbstractModel
 import statistics
 from authentication.models import User
-from django.db.models import Q
+import uuid
 
-class Manufacturer(models.Model):
+
+class BaseModel(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    class Meta:
+        abstract = True
+
+
+class Manufacturer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=255, null=False,blank=False)
     phone = models.IntegerField(blank=False, null=False)
@@ -16,32 +24,40 @@ class Manufacturer(models.Model):
         return 'Manufacturer - %s %s'%(self.name, self.email)
  
 
-class Farmer(models.Model):
+
+class Farmer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
 
-class Distributor(models.Model):
+
+class Distributor(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
+    manufacturer = models.OneToOneField(Manufacturer, on_delete=models.CASCADE, related_name='profile')
     
+    def __str__(self):
+        return 'Distributor - %s %s'%(self.user.first_name, self.manufacturer)
+
 
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
     description = models.TextField(null=False,blank=False)
     composition = models.TextField(null=False,blank=False)
-    qr_code = models.CharField(max_length=500)
     image = models.ImageField(upload_to='products',null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.name)
 
+class QrCode(models.Model):
+    image = models.ImageField(upload_to='products/qr_codes')
+    date = models.DateTimeField(auto_now_add=True)
+    
 
-class Product(models.Model):
+class Product(BaseModel):
     product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
-    qr_code = models.CharField(max_length=500)
+    qr_code = models.OneToOneField(QrCode, on_delete=models.CASCADE)
     sold = models.BooleanField(default=False)
     manufactured = models.DateField(auto_now_add=False, auto_now=False)
     date = models.DateField(auto_now_add=True)
@@ -50,7 +66,7 @@ class Product(models.Model):
          return '%s - (%s)' %(self.product_set,self.pk)
 
 
-class Shop(models.Model):
+class Shop(BaseModel):
     name = models.CharField(max_length=255, null=False,blank=False, unique=True)
     phone = models.IntegerField(blank=False, null=False, unique=True)
     location = models.CharField(max_length=255, null=False,blank=False)
@@ -60,9 +76,8 @@ class Shop(models.Model):
     class Meta:
         unique_together=(('name','phone','location'),('name','location'))
     
-class Package(models.Model):
-    products = models.ManyToManyField(Product,blank=True,
-)
+class Package(BaseModel):
+    products = models.ManyToManyField(Product,blank=True,)
     distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True,blank=True)
     delivered = models.BooleanField(default=False)
