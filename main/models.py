@@ -4,7 +4,7 @@ import statistics
 from authentication.models import User
 from django.db.models import Q
 
-class Manufacturer(BaseAbstractModel):
+class Manufacturer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=255, null=False,blank=False)
     phone = models.IntegerField(blank=False, null=False)
@@ -16,12 +16,12 @@ class Manufacturer(BaseAbstractModel):
         return 'Manufacturer - %s %s'%(self.name, self.email)
  
 
-class Farmer(BaseAbstractModel):
+class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
 
-class Distributor(BaseAbstractModel):
+class Distributor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
     
@@ -47,7 +47,7 @@ class Product(models.Model):
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return '%s - (%s) | %s' %(self.product_set,self.pk, self.bought_not_bought)
+         return '%s - (%s)' %(self.product_set,self.pk)
 
 
 class Shop(models.Model):
