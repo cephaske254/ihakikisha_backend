@@ -2,6 +2,13 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
+    path('shops/',views.Shops.as_view()),
+    path('shops/<pk>/',views.ShopsDetail.as_view()),
+    path('ratings/',views.Ratings.as_view()),
+    path('ratings/<pk>/',views.RatingsDetail.as_view()),
+    path('packages/',views.Packages.as_view()),
+    path('packages/<pk>/',views.PackageDetail.as_view),
+
     path('product-set/',views.ProductSets.as_view(),name='add_set'),
     path('product-set/<pk>/',views.ProductSetDetails.as_view(),name='update_set'),
     path('products/',views.Products.as_view(),name='add_product'),
@@ -12,11 +19,4 @@ urlpatterns = [
     path('farmers/<pk>', views.FarmerProfileDetail.as_view()),
     path('manufacturers/', views.ManufacturerProfile.as_view()),
     path('manufacturers/<pk>', views.ManufacturerProfileDetail.as_view()),
-    path('shop/',views.ShopProfile.as_view()),
-    path('shop/<pk>/',views.ShopProfileDetail.as_view()),
-    path('ratings/',views.RatingsProfile.as_view()),
-    path('ratings/<pk>/',views.RatingsProfileDetail.as_view()),
-    path('package/',views.PackageProfile.as_view()),
-    path('package/<pk>/',views.PackageProfileDetail.as_view),
 ]
-

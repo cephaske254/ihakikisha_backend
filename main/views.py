@@ -2,7 +2,6 @@ from django.shortcuts import render
 from rest_framework import generics
 from .serializers import *
 from rest_framework.permissions import AllowAny
-from .models import *
 from . import serializers
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package
@@ -15,17 +14,16 @@ class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
 class ProductSets(generics.ListCreateAPIView):
     serializer_class = ProductSetSerializer
     queryset = ProductSet.objects.all()
+    
 
+class Products(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
 
 class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
-    
-    
-class Products(generics.ListCreateAPIView):
-    serializer_class = ProductSerializer
-    queryset = Product.objects.all()
-    
+
 
 class DistributorProfile(generics.ListCreateAPIView):
     serializer_class = serializers.DistributorProfileSerializer
@@ -38,7 +36,6 @@ class DistributorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Distributor.objects.all()
     permission_classes = (IsAuthenticated,)
     
-
 class ManufacturerProfile(generics.ListCreateAPIView):
     serializer_class = serializers.ManufacturerProfileSerializer
     queryset = Manufacturer.objects.all()
@@ -60,34 +57,33 @@ class FarmerProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Farmer.objects.all()
     permission_classes = (IsAuthenticated,)
 
-    
-class ShopProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.ShopProfileSerializer
+class Shops(generics.ListCreateAPIView):
+    serializer_class = serializers.ShopSerializer
     queryset = Shop.objects.all()
 
 
-class ShopProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.ShopProfileSerializer
+class ShopsDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.ShopSerializer
     queryset = Shop.objects.all()
     
 
-class RatingsProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.RatingsProfileSerializer
+class Ratings(generics.ListCreateAPIView):
+    serializer_class = serializers.RatingsSerializer
     queryset = Rating.objects.all()
     
 
-class RatingsProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.RatingsProfileSerializer
+class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.RatingsSerializer
     queryset = Rating.objects.all()
     
 
-class PackageProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.PackageProfileSerializer
+class Packages(generics.ListCreateAPIView):
+    serializer_class = serializers.PackageSerializer
     queryset = Package.objects.all()
     
 
-class PackageProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.PackageProfileSerializer
+class PackageDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.PackageSerializer
     queryset = Package.objects.all()
     
 
