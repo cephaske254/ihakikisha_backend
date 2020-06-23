@@ -10,7 +10,7 @@ class ShopProfileSerializer(serializers.ModelSerializer):
 
 class RatingsProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Ratings
+        model = Rating
         exclude = []
 
 class PackageProfileSerializer(serializers.ModelSerializer):

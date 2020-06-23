@@ -17,11 +17,11 @@ class ShopProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class RatingsProfile(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsProfileSerializer
-    queryset = Ratings.objects.all()
+    queryset = Rating.objects.all()
 
 class RatingsProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RatingsProfileSerializer
-    queryset = Ratings.objects.all()
+    queryset = Rating.objects.all()
 
 class PackageProfile(generics.ListCreateAPIView):
     serializer_class = serializers.PackageProfileSerializer
