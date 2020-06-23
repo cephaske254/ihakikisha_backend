@@ -8,10 +8,9 @@ import uuid
 
 
 class BaseModel(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     class Meta:
         abstract = True
-
 
 class Manufacturer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
@@ -37,7 +36,9 @@ class Distributor(BaseModel):
     def __str__(self):
         return 'Distributor - %s %s'%(self.user.first_name, self.manufacturer)
 
-
+    class Meta:
+        unique_together = (('user', 'manufacturer'))
+        
 class ProductSet(models.Model):
     manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
     name = models.CharField(max_length=255, null=False)
