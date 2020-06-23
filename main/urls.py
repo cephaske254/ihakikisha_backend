@@ -7,4 +7,3 @@ urlpatterns = [
     path('add_products/',views.AddProduct.as_view(),name='add_product'),
     path('product/details/<pk>/',views.ProductDetails.as_view(),name='get_product'),
 ]
-
