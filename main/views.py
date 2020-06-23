@@ -8,11 +8,11 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package
 
 # Create your views here
-class AddProductSet(generics.RetrieveUpdateDestroyAPIView):
+class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSetSerializer
     queryset = ProductSet.objects.all()
 
-class ProductSetDetails(generics.ListCreateAPIView):
+class ProductSet(generics.ListCreateAPIView):
     serializer_class = ProductSetSerializer
     queryset = ProductSet.objects.all()
 
@@ -22,7 +22,7 @@ class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     
 
-class AddProduct(generics.ListCreateAPIView):
+class Product(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     
