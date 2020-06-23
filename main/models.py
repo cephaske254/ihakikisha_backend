@@ -1,17 +1,12 @@
 from django.db import models
 from django.db.models import Q
-from utils.models import BaseAbstractModel
+# from utils.models import BaseAbstractModel
 import statistics
 from authentication.models import User
 from django.db.models import Q
 
-class Manufacturer(BaseAbstractModel):
-<<<<<<< HEAD
+class Manufacturer(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False,)
-=======
-    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
-    name = models.CharField(max_length=255, null=False,blank=False)
->>>>>>> 270b9d347b1bd8a1868f8d2b420201e9495c08b9
     phone = models.IntegerField(blank=False, null=False)
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.EmailField(max_length=255)
@@ -19,64 +14,14 @@ class Manufacturer(BaseAbstractModel):
 
     def __str__(self):
         return 'Manufacturer - %s %s'%(self.name, self.email)
-<<<<<<< HEAD
-    
-    @classmethod
-    def add_manufacturer(cls, name, phone, location, email, logo):
-        manufacturer = cls.objects.create(name=name, phone=phone, location=location, email=email, logo=logo)
-        manufacturer.save()
-        return manufacturer
-
-    @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold, date):
-        product = cls.get_product_by_id(id)
-        product.name = name or product.name
-        product.manufactured = manufactured or product.manufactured
-        product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.date = date or product.date
-        product.save()
-        return product
-
-    def __str__(self):
-        return self.username.username
-
-    @classmethod
-    def search_product(cls,search_term):
-        product_name = cls.object.filter(Q(product_product=search_term))
-        return product_name
-
-    @classmethod
-    def save_distributor(cls,user,manufacturer,image):
-        distributor = cls(user=user,manufacturer=manufacturer,image=image)
-        distributor.save()
-        return distributor
-
-    @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold, date):
-        product = cls.get_product_by_id(id)
-        product.name = name or product.name
-        product.manufactured = manufactured or product.manufactured
-        product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.date = date or product.date
-        product.save()
-        return product
-
-    @classmethod
-    def delete_productset(cls,ProductSet):
-        cls.objects.filter(ProductSet=ProductSet).delete()
-
-=======
  
 
-class Farmer(BaseAbstractModel):
+class Farmer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
->>>>>>> 270b9d347b1bd8a1868f8d2b420201e9495c08b9
 
-class Distributor(BaseAbstractModel):
+class Distributor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     manufacturer = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employer')
     
@@ -102,75 +47,8 @@ class Product(models.Model):
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-<<<<<<< HEAD
-        return self.name
-
-    @classmethod
-    def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
-        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
-        product.save()
-        return product
-    
-    @classmethod
-    def create_product(cls,name,manufactured,product_set,qr_code,sold,date):
-        product = cls(name=name,manufacured=manufacured,product_set=product_set,qr_code=qr_code,sold=sold,date=date)
-        product.save()
-        return product
-
-    @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold):
-        product = cls.get_product_by_id(id)
-        product.name = name or product.name
-        product.manufactured = manufactured or product.manufactured
-        product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.save()
-        return product
-
-    @classmethod
-    def get_all_products(cls):
-        products = cls.objects.all()
-        return products
-
-    @classmethod
-    def delete_product(cls,id):
-        product = cls.objects.get(id=id)
-        product.delete()
-
-    @classmethod
-    def get_product_by_id(cls,id):
-        product = cls.objects.get(id=id)
-        return product
-
-    @classmethod
-    def update_product(cls,id, name, manufactured, qr_code, sold, date):
-        product = cls.get_product_by_id(id)
-        product.name = name or product.name
-        product.manufactured = manufactured or product.manufactured
-        product.qr_code = qr_code or product.qr_code
-        product.sold = sold or product.sold
-        product.date = date or product.date
-        product.save()
-        return product
-
-    @classmethod
-    def delete_product(cls,id):
-        product = cls.objects.get(id=id)
-        product.delete()
-
-    @classmethod
-    def get_all_products(cls):
-        products = cls.objects.all()
-        return products
-
-    @classmethod
-    def get_product_by_id(cls,id):
-        product = cls.objects.get(id=id)
-        return product
-=======
         return '%s - (%s) | %s' %(self.product_set,self.pk, self.bought_not_bought)
 
->>>>>>> 270b9d347b1bd8a1868f8d2b420201e9495c08b9
 
 class Shop(models.Model):
     name = models.CharField(max_length=255, null=False,blank=False, unique=True)
