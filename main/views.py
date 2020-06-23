@@ -7,7 +7,7 @@ from .models import Shop, Package, Rating
 # Create your views here.
 
 class ShopProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.ShopSerializer
+    serializer_class = serializers.ShopProfileSerializer
     queryset = Shop.objects.all()
 
 
@@ -16,7 +16,7 @@ class ShopProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Shop.objects.all()
 
 class RatingsProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.RatingsSerializer
+    serializer_class = serializers.RatingsProfileSerializer
     queryset = Ratings.objects.all()
 
 class RatingsProfileDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -24,7 +24,7 @@ class RatingsProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Ratings.objects.all()
 
 class PackageProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.PackageSerializer
+    serializer_class = serializers.PackageProfileSerializer
     queryset = Package.objects.all()
 
 class PackageProfileDetail(generics.RetrieveUpdateDestroyAPIView):
