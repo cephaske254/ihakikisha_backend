@@ -3,7 +3,6 @@ from django.db.models import Q
 from utils.models import BaseAbstractModel
 import statistics
 from authentication.models import User
-from django.db.models import Q
 import uuid
 
 
@@ -25,10 +24,12 @@ class Manufacturer(BaseModel):
         return 'Manufacturer - %s %s'%(self.name, self.email)
  
 
+
 class Farmer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
+
 
 class Distributor(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -62,7 +63,7 @@ class Product(BaseModel):
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return '%s - (%s) | %s' %(self.product_set,self.pk, self.bought_not_bought)
+         return '%s - (%s)' %(self.product_set,self.pk)
 
 
 class Shop(BaseModel):
@@ -76,8 +77,7 @@ class Shop(BaseModel):
         unique_together=(('name','phone','location'),('name','location'))
     
 class Package(BaseModel):
-    products = models.ManyToManyField(Product,blank=True,
-)
+    products = models.ManyToManyField(Product,blank=True,)
     distributor = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True,blank=True)
     delivered = models.BooleanField(default=False)
