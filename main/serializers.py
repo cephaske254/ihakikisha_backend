@@ -29,17 +29,17 @@ class DistributorProfileSerializer(serializers.ModelSerializer):
         model = Distributor
         exclude =[]
 
-class ShopProfileSerializer(serializers.ModelSerializer):
+class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         exclude = []
 
-class RatingsProfileSerializer(serializers.ModelSerializer):
+class RatingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         exclude = []
 
-class PackageProfileSerializer(serializers.ModelSerializer):
+class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
         exclude = []
