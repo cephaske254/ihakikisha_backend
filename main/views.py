@@ -1,11 +1,13 @@
 from django.shortcuts import render
-from rest_framework import generics
+from rest_framework import generics, views
 from .serializers import *
 from rest_framework.permissions import AllowAny
 from . import serializers
 from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package
 from .permissions import IsOwner
+from django.http import JsonResponse
+
 # Create your views here.
 
 class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -24,6 +26,15 @@ class Products(generics.ListCreateAPIView):
 class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+
+
+class RetrieveProduct(generics.RetrieveAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = ProductSerializer
+    serializer_class.Meta.depth=2
+    lookup_field = 'uuid'
+    queryset = Product.objects.all()
+           
 
 
 class DistributorProfile(generics.ListCreateAPIView):

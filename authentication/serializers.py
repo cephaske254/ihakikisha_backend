@@ -20,7 +20,7 @@ class UserSerializerMini(serializers.ModelSerializer):
             profile.save()
 
         elif user.user_type == 'M':
-            profile = Manufacturer.objects.create(user = user, phone=254)
+            profile = Manufacturer.objects.create(user = user, phone=0, email=user.email)
             profile.save()
 
     def create(self, validated_data):
