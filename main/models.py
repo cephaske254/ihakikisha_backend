@@ -1,7 +1,6 @@
 from django.db import models
-from django.db.models import Q
 from utils.models import BaseAbstractModel
-import statistics
+
 from authentication.models import User
 import uuid
 from django.dispatch import receiver
@@ -11,7 +10,6 @@ import qrcode
 from django.conf import settings
 import os
 from phone_field import PhoneField
-from phone_field.forms import BACKEND_EXTENSION_SEPARATOR
 
 from .validators import validate_phone
 

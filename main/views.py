@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework import generics, views
 from rest_framework.permissions import AllowAny
 from . import serializers
-from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticatedOrReadOnly
 from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package, ProductSet, Product
-from .permissions import IsOwner
-from django.http import JsonResponse
+
+from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticatedOrReadOnly
+from .permissions import IsManufacturer, IsAssociated
 
 # Create your views here.
 
@@ -29,7 +29,7 @@ class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RetrieveProduct(generics.RetrieveAPIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,IsManufacturer)
     serializer_class = serializers.ProductRetrieveSerializer
     lookup_field = 'uuid'
     queryset = Product.objects.all()
@@ -38,7 +38,7 @@ class RetrieveProduct(generics.RetrieveAPIView):
 class DistributorProfile(generics.ListCreateAPIView):
     serializer_class = serializers.DistributorProfileSerializer
     queryset = Distributor.objects.all()
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAuthenticatedOrReadOnly,IsAssociated, IsManufacturer)
 
 class DistributorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.DistributorProfileSerializer

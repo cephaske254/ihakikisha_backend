@@ -13,20 +13,6 @@ class UserSerializerMini(serializers.ModelSerializer):
                 'write_only': True, 'validators':[validate_password]
                 },
             }
-        
-    def create_profile(self,user):
-        if user.user_type == 'F':
-            profile = Farmer.objects.create(user = user)
-            profile.save()
-
-        elif user.user_type == 'M':
-            profile = Manufacturer.objects.create(user = user, phone=0, email=user.email)
-            profile.save()
-
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        self.create_profile(user)
-        return user
 
             
         

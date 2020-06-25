@@ -2,6 +2,9 @@ from django.db import models
 from utils.models import BaseAbstractModel
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, AbstractUser
 from utils.models import UserManager, BaseAbstractModel
+
+from django.db.models.signals import post_save,post_delete, pre_save
+from django.dispatch import receiver
 # Create your models here.
 
 
@@ -74,3 +77,20 @@ class User(BaseAbstractModel, PermissionsMixin):
             return user
         except:
             return None
+
+    def save(self, *args, **kwargs):
+        self.set_password(self.password)
+        super(User, self).save(*args, **kwargs)
+
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, **kwargs):
+    from main.models import  Manufacturer, Farmer, Distributor
+
+    if instance.user_type == 'F':
+        profile = Farmer.objects.get_or_create(user = instance)
+
+    elif instance.user_type == 'M':
+        profile = Manufacturer.objects.get_or_create(user = instance, phone=0, email=instance.email)
+
+
