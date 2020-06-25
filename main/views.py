@@ -5,7 +5,6 @@ from . import serializers
 from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package, ProductSet, Product
 
 from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticatedOrReadOnly
-from .permissions import IsManufacturer, IsAssociated
 
 # Create your views here.
 
@@ -29,7 +28,7 @@ class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RetrieveProduct(generics.RetrieveAPIView):
-    permission_classes = (AllowAny,IsManufacturer)
+    permission_classes = (AllowAny,)
     serializer_class = serializers.ProductRetrieveSerializer
     lookup_field = 'uuid'
     queryset = Product.objects.all()
@@ -38,7 +37,7 @@ class RetrieveProduct(generics.RetrieveAPIView):
 class DistributorProfile(generics.ListCreateAPIView):
     serializer_class = serializers.DistributorProfileSerializer
     queryset = Distributor.objects.all()
-    permission_classes = (IsAuthenticatedOrReadOnly,IsAssociated, IsManufacturer)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 class DistributorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.DistributorProfileSerializer
