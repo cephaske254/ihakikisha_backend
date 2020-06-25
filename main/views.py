@@ -78,7 +78,13 @@ class ShopsDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class Ratings(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Rating.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        request.data['user']=request.user.id
+        return self.create(request, *args, **kwargs)
+
     
 
 class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):

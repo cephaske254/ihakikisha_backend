@@ -108,9 +108,9 @@ class Package(BaseModel):
 
 class Rating(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE,primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
     rating = models.PositiveIntegerField(null=False,blank=False)
-    comment = models.TextField()
+    comment = models.TextField(null=True, blank=True)
 
     unique_together = 'user'
 
