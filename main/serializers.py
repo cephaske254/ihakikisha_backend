@@ -1,69 +1,75 @@
 from rest_framework import serializers
-from .models import Distributor,Farmer,Manufacturer, Shop, Rating, Package, ProductSet, Product
+from .models import Distributor, Farmer, Manufacturer, Shop, Rating, Package, ProductSet, Product
 from authentication.serializers import UserSerializerNano
 from authentication.models import User
 from cloudinary.models import CloudinaryField
+from django.conf import settings
 
 
-class ProductSetSerializer(serializers.ModelSerializer):
+class ProductSetSerializer(serializers.ModelSerializer, ):
     class Meta:
         model = ProductSet
         fields = '__all__'
 
+class ManufacturerSerializerMini(serializers.ModelSerializer,):
 
-class ManufacturerSerializerMini(serializers.ModelSerializer):
     class Meta:
         model = Manufacturer
-        fields = ['name', 'phone','email', 'location', 'logo']
+        fields = ['name', 'phone', 'email', 'location', 'logo']
 
 
-class ProductSetSerializerMini(serializers.ModelSerializer):
+class ProductSetSerializerMini(serializers.ModelSerializer,):
     manufacturer = ManufacturerSerializerMini()
+
     class Meta:
-        fields = ['name', 'description', 'composition','manufacturer']
+        fields = ['name', 'description', 'composition', 'manufacturer']
         model = ProductSet
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer, ):
+
     class Meta:
         model = Product
         fields = '__all__'
 
 
-
-class ProductRetrieveSerializer(serializers.ModelSerializer):
-    product_set = ProductSetSerializerMini()
+class ProductRetrieveSerializer(serializers.ModelSerializer, ):
     class Meta:
         model = Product
-        fields = ['uuid' ,'manufactured','sold', 'qr_code', 'product_set']
-        extra_kwargs = {"qr_code":{"read_only":True}}
+        fields = ['uuid', 'manufactured', 'sold', 'qr_code', 'product_set']
+        extra_kwargs = {"qr_code": {"read_only": True}}
 
 
-class FarmerProfileSerializer(serializers.ModelSerializer):
+class FarmerProfileSerializer(serializers.ModelSerializer, ):
+
     class Meta:
         model = Farmer
-        exclude =[]
+        exclude = []
+
 
 class ManufacturerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manufacturer
-        exclude =[]
+        exclude = []
 
 
 class DistributorProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Distributor
-        exclude =[]
+        exclude = []
+
 
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         exclude = []
 
+
 class RatingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         exclude = []
+
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:

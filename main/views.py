@@ -10,10 +10,12 @@ from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticated
 
 class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProductSetSerializer
+    permission_classes=(IsAuthenticatedOrReadOnly,)
     queryset = ProductSet.objects.all()
 
 class ProductSets(generics.ListCreateAPIView):
     serializer_class = serializers.ProductSetSerializer
+    permission_classes=(IsAuthenticatedOrReadOnly,)
     queryset = ProductSet.objects.all()
     
 
@@ -84,7 +86,6 @@ class Ratings(generics.ListCreateAPIView):
         request.data['user']=request.user.id
         return self.create(request, *args, **kwargs)
 
-    
 
 class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.RatingsSerializer
