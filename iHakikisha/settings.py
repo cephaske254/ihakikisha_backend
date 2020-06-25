@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     # Third-Party Apps Below
     'rest_framework',
     'rest_framework.authtoken',
+    'phone_field',
 
     # Local Apps Below
     'main.apps.MainConfig',

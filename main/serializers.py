@@ -9,12 +9,32 @@ class ProductSetSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ManufacturerSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = Manufacturer
+        fields = ['name', 'phone','email', 'location', 'logo']
+
+
+class ProductSetSerializerMini(serializers.ModelSerializer):
+    manufacturer = ManufacturerSerializerMini()
+    class Meta:
+        fields = ['name', 'description', 'composition','manufacturer']
+        model = ProductSet
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+
+class ProductRetrieveSerializer(serializers.ModelSerializer):
+    product_set = ProductSetSerializerMini()
+    class Meta:
+        model = Product
+        fields = ['uuid' ,'manufactured','sold', 'qr_code', 'product_set']
         extra_kwargs = {"qr_code":{"read_only":True}}
-        
 
 
 class FarmerProfileSerializer(serializers.ModelSerializer):
@@ -26,6 +46,7 @@ class ManufacturerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manufacturer
         exclude =[]
+
 
 class DistributorProfileSerializer(serializers.ModelSerializer):
     class Meta:
