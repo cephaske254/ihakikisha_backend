@@ -1,21 +1,28 @@
 from django.db import models
-from django.db.models import Q
 from utils.models import BaseAbstractModel
-import statistics
+
 from authentication.models import User
 import uuid
+from django.dispatch import receiver
+from django.db.models.signals import post_save,post_delete
+
+import qrcode
+from django.conf import settings
+import os
+from phone_field import PhoneField
+
+from .validators import validate_phone
 
 
 class BaseModel(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True,)
     class Meta:
         abstract = True
-
 
 class Manufacturer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=255, null=False,blank=False)
-    phone = models.IntegerField(blank=False, null=False)
+    phone = PhoneField(blank=False, null=False,max_length=13,E164_only=False,validators=[validate_phone])
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.EmailField(max_length=255)
     logo = models.ImageField(upload_to='profiles/manufacturer',default='avatar.png')
@@ -30,7 +37,6 @@ class Farmer(BaseModel):
     image = models.ImageField(upload_to='profiles/farmer',default='avatar.png')
     
 
-
 class Distributor(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     manufacturer = models.OneToOneField(Manufacturer, on_delete=models.CASCADE, related_name='profile')
@@ -38,9 +44,11 @@ class Distributor(BaseModel):
     def __str__(self):
         return 'Distributor - %s %s'%(self.user.first_name, self.manufacturer)
 
-
+    class Meta:
+        unique_together = (('user', 'manufacturer'))
+        
 class ProductSet(models.Model):
-    manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(Manufacturer,on_delete=models.CASCADE, null=False, blank=False)
     name = models.CharField(max_length=255, null=False)
     description = models.TextField(null=False,blank=False)
     composition = models.TextField(null=False,blank=False)
@@ -50,20 +58,32 @@ class ProductSet(models.Model):
     def __str__(self):
         return '%s by %s'%(self.name,self.manufacturer.name)
 
-class QrCode(models.Model):
-    image = models.ImageField(upload_to='products/qr_codes')
-    date = models.DateTimeField(auto_now_add=True)
-    
+
 
 class Product(BaseModel):
     product_set = models.ForeignKey(ProductSet,on_delete=models.CASCADE)
-    qr_code = models.OneToOneField(QrCode, on_delete=models.CASCADE)
+    qr_code = models.ImageField(upload_to='products/qr_codes', blank=True, editable=False)
     sold = models.BooleanField(default=False)
     manufactured = models.DateField(auto_now_add=False, auto_now=False)
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
          return '%s - (%s)' %(self.product_set,self.pk)
+
+    def save(self, *args, **kwargs):
+        if not self.qr_code:
+            self.qr_code = f'qr_codes/{self.uuid}.png'
+            super(Product, self).save(*args, **kwargs)
+
+    def delete(self):
+        upload_to = f'qr_codes/{self.uuid}.png'
+        image_name = f'{settings.MEDIA_ROOT}/{upload_to}'
+        if os.path.isfile(image_name):
+            os.remove(image_name)
+            print('deleted')
+            
+        print(image_name)
+        super(Product, self).delete()
 
 
 class Shop(BaseModel):
@@ -88,9 +108,9 @@ class Package(BaseModel):
 
 class Rating(models.Model):
     product = models.OneToOneField(Product, on_delete=models.CASCADE,primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
     rating = models.PositiveIntegerField(null=False,blank=False)
-    comment = models.TextField()
+    comment = models.TextField(null=True, blank=True)
 
     unique_together = 'user'
 
@@ -105,3 +125,28 @@ class Rating(models.Model):
             ratings.append(0)
         return ratings
    
+
+
+@receiver(post_save, sender=Product)
+def generate_qr(sender, instance, **kwargs):
+    upload_to = f'qr_codes/{instance.uuid}.png'
+
+    qr = qrcode.QRCode(
+        version = 1,
+        error_correction = qrcode.ERROR_CORRECT_M,
+        box_size = 10,
+        border = 3
+    )
+
+    data =instance.uuid
+    qr.add_data(data)
+    qr.make(fit=True)
+    
+    img = qr.make_image(fill='black', back_color='white')
+    image_name = f'{settings.MEDIA_ROOT}/{upload_to}'
+
+    img.save(image_name)
+    instance.qr_code = upload_to
+    
+
+

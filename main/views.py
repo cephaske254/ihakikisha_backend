@@ -1,93 +1,102 @@
 from django.shortcuts import render
-from rest_framework import generics
-from .serializers import *
+from rest_framework import generics, views
 from rest_framework.permissions import AllowAny
-from .models import *
 from . import serializers
-from rest_framework.permissions import AllowAny,IsAuthenticated
-from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package
+from .models import Distributor, User, Shop, Manufacturer, Farmer, Rating, Package, ProductSet, Product
 
-# Create your views here
+from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticatedOrReadOnly
+
+# Create your views here.
+
 class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ProductSetSerializer
+    serializer_class = serializers.ProductSetSerializer
     queryset = ProductSet.objects.all()
 
-class ProductSet(generics.ListCreateAPIView):
-    serializer_class = ProductSetSerializer
+class ProductSets(generics.ListCreateAPIView):
+    serializer_class = serializers.ProductSetSerializer
     queryset = ProductSet.objects.all()
+    
 
+class Products(generics.ListCreateAPIView):
+    serializer_class = serializers.ProductSerializer
+    queryset = Product.objects.all()
+    permission_classes=(IsAuthenticatedOrReadOnly,)
 
 class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = serializers.ProductSerializer
     queryset = Product.objects.all()
-    
 
-class Product(generics.ListCreateAPIView):
-    serializer_class = ProductSerializer
+
+class RetrieveProduct(generics.RetrieveAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = serializers.ProductRetrieveSerializer
+    lookup_field = 'uuid'
     queryset = Product.objects.all()
-    
+           
 
 class DistributorProfile(generics.ListCreateAPIView):
     serializer_class = serializers.DistributorProfileSerializer
     queryset = Distributor.objects.all()
-    permission_classes = (IsAuthenticated,)
-    
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 class DistributorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.DistributorProfileSerializer
     queryset = Distributor.objects.all()
     permission_classes = (IsAuthenticated,)
     
-
 class ManufacturerProfile(generics.ListCreateAPIView):
     serializer_class = serializers.ManufacturerProfileSerializer
     queryset = Manufacturer.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 class ManufacturerProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ManufacturerProfileSerializer
     queryset = Manufacturer.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class FarmerProfile(generics.ListCreateAPIView):
     serializer_class = serializers.FarmerProfileSerializer
     queryset = Farmer.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 class FarmerProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.FarmerProfileSerializer
     queryset = Farmer.objects.all()
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    
-class ShopProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.ShopProfileSerializer
+class Shops(generics.ListCreateAPIView):
+    serializer_class = serializers.ShopSerializer
     queryset = Shop.objects.all()
 
 
-class ShopProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.ShopProfileSerializer
+class ShopsDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.ShopSerializer
     queryset = Shop.objects.all()
     
 
-class RatingsProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.RatingsProfileSerializer
+class Ratings(generics.ListCreateAPIView):
+    serializer_class = serializers.RatingsSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+    queryset = Rating.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        request.data['user']=request.user.id
+        return self.create(request, *args, **kwargs)
+
+    
+
+class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.RatingsSerializer
     queryset = Rating.objects.all()
     
 
-class RatingsProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.RatingsProfileSerializer
-    queryset = Rating.objects.all()
-    
-
-class PackageProfile(generics.ListCreateAPIView):
-    serializer_class = serializers.PackageProfileSerializer
+class Packages(generics.ListCreateAPIView):
+    serializer_class = serializers.PackageSerializer
     queryset = Package.objects.all()
     
-
-class PackageProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = serializers.PackageProfileSerializer
+class PackageDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = serializers.PackageSerializer
     queryset = Package.objects.all()
     
 

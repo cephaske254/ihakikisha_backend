@@ -2,23 +2,20 @@ import os
 from decouple import config, Csv
 import dj_database_url
 import django_heroku
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import cloudinary
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')	
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default='*')
 
 # Authentication class
 AUTH_USER_MODEL = 'authentication.User'
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -32,6 +29,7 @@ INSTALLED_APPS = [
     # Third-Party Apps Below
     'rest_framework',
     'rest_framework.authtoken',
+    'phone_field',
 
     # Local Apps Below
     'main.apps.MainConfig',
@@ -125,6 +123,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+
+# CLOUDINARY
+cloudinary.config(
+    cloud_name = config('CLOUDINARY_CLOUD_NAME'),
+    api_key = config('CLOUDINARY_API_KEY'),
+    api_secret = config('CLOUDINARY_API_SECRET'),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
