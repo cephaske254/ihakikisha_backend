@@ -4,7 +4,7 @@ from utils.models import BaseAbstractModel
 from authentication.models import User
 import uuid
 from django.dispatch import receiver
-from django.db.models.signals import post_save,post_delete
+from django.db.models.signals import post_save,post_delete, pre_save
 
 import qrcode
 from django.conf import settings
@@ -161,7 +161,7 @@ def set_image_url(sender,instance, **kwargs):
         except:pass
 
         try:
-            instance.logo = cloudinary.uploader.upload_image(instance.logo,use_filename=True)
+            image = instance.logo = cloudinary.uploader.upload_image(instance.logo,use_filename=True)
         except:
             pass
 

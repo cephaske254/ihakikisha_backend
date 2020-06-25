@@ -141,6 +141,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     'static',
 ]
-MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = 'https://res.cloudinary.com/dal1luubo/'
+
 django_heroku.settings(locals())
+
+
+        # 'res.cloudinary.com/dal1luubo/image/upload/v1593096291/dark_light-green_m9flm3.jpg",
