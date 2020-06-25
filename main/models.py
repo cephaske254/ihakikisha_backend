@@ -151,11 +151,12 @@ def generate_qr(sender, instance, **kwargs):
 
     cloudinary_image = cloudinary.uploader.upload_image(image_name,user_filename=True)
 
-    image_url = cloudinary_image.build_url()
+    image_url = cloudinary_image
     instance.qr_code = image_url
     
 @receiver(post_save)
 def set_image_url(sender,instance, **kwargs):
+    if sender !=Product:
         try:
             instance.image = cloudinary.uploader.upload_image(instance.image ,use_filename=True)
         except:pass
