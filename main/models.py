@@ -9,7 +9,6 @@ from django.db.models.signals import post_save,post_delete
 import qrcode
 from django.conf import settings
 import os
-from phone_field import PhoneField
 
 from .validators import validate_phone
 
@@ -25,7 +24,7 @@ class BaseModel(models.Model):
 class Manufacturer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True)
     name = models.CharField(max_length=255, null=False,blank=False)
-    phone = PhoneField(blank=False, null=False,max_length=13,E164_only=False,validators=[validate_phone])
+    phone = models.CharField(blank=False, null=False,max_length=13,validators=[validate_phone])
     location = models.CharField(max_length=255, null=False,blank=False)
     email = models.EmailField(max_length=255)
     logo = models.ImageField(upload_to='profiles/manufacturer',default='avatar.png')
