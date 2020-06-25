@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Distributor,Farmer,Manufacturer, Shop, Rating, Package, ProductSet, Product
 from authentication.serializers import UserSerializerNano
 from authentication.models import User
+from cloudinary.models import CloudinaryField
+
 
 class ProductSetSerializer(serializers.ModelSerializer):
     class Meta:

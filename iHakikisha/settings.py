@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'phone_field',
+    'cloudinary',
 
     # Local Apps Below
     'main.apps.MainConfig',

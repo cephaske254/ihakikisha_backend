@@ -13,6 +13,9 @@ from phone_field import PhoneField
 
 from .validators import validate_phone
 
+import cloudinary
+
+
 
 class BaseModel(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True,)
@@ -146,7 +149,22 @@ def generate_qr(sender, instance, **kwargs):
     image_name = f'{settings.MEDIA_ROOT}/{upload_to}'
 
     img.save(image_name)
-    instance.qr_code = upload_to
+
+    cloudinary_image = cloudinary.uploader.upload_image(image_name,user_filename=True)
+
+    image_url = cloudinary_image.build_url()
+    instance.qr_code = image_url
     
+@receiver(post_save)
+def set_image_url(sender,instance, **kwargs):
+        try:
+            instance.image = cloudinary.uploader.upload_image(instance.image ,use_filename=True)
+        except:pass
+
+        try:
+            instance.logo = cloudinary.uploader.upload_image(instance.logo,use_filename=True)
+        except:
+            pass
+
 
 
