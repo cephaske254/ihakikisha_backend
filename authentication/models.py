@@ -79,7 +79,8 @@ class User(BaseAbstractModel, PermissionsMixin):
             return None
 
     def save(self, *args, **kwargs):
-        self.set_password(self.password)
+        if self.admin == False or self.superuser == False:
+            self.set_password(self.password)
         super(User, self).save(*args, **kwargs)
 
 
