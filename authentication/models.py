@@ -88,9 +88,9 @@ def create_profile(sender, instance, **kwargs):
     from main.models import  Manufacturer, Farmer, Distributor
 
     if instance.user_type == 'F':
-        profile = Farmer.objects.get_or_create(user = instance)
+        profile = Farmer.objects.update_or_create(user = instance)
 
     elif instance.user_type == 'M':
-        profile = Manufacturer.objects.get_or_create(user = instance, phone=0, email=instance.email)
+        profile = Manufacturer.objects.update_or_create(user = instance, phone=0, email=instance.email)
 
 
