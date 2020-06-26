@@ -159,14 +159,14 @@ def generate_qr(sender, instance, **kwargs):
 
     img.save(image_name)
 
-    cloudinary_image = cloudinary.uploader.upload_image(
-        image_name,
-        public_id=str(instance.uuid),
-        overwrite=True,
-    )
+    # cloudinary_image = cloudinary.uploader.upload_image(
+    #     image_name,
+    #     public_id=str(instance.uuid),
+    #     overwrite=True,
+    # )
 
-    image_url = cloudinary_image.build_url()
-    instance.qr_code = image_url
+    # image_url = cloudinary_image.build_url()
+    # instance.qr_code = image_url
 
 
 @receiver(post_save)
