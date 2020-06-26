@@ -159,34 +159,11 @@ def generate_qr(sender, instance, **kwargs):
 
     img.save(image_name)
 
-    # cloudinary_image = cloudinary.uploader.upload_image(
-    #     image_name,
-    #     public_id=str(instance.uuid),
-    #     overwrite=True,
-    # )
+    cloudinary_image = cloudinary.uploader.upload_image(
+        image_name,
+        public_id=str(instance.uuid),
+        overwrite=True,
+    )
 
-    # image_url = cloudinary_image.build_url()
-    # instance.qr_code = image_url
-
-
-# @receiver(post_save)
-# def set_image_url(sender, instance, **kwargs):
-#     if sender != Product:
-#         try:
-#             instance.image = cloudinary.uploader.upload_image(
-#                 instance.image,
-#                 use_filename=True,
-#                 overwrite=True,
-#                 public_id=instance.id,
-#             )
-#         except:
-#             pass
-
-#         try:
-#             image = instance.logo = cloudinary.uploader.upload_image(
-#                 instance.logo,
-#                 overwrite=True,
-#                 use_filename=True,
-#             )
-#         except:
-#             pass
+    image_url = cloudinary_image
+    instance.qr_code = image_url
