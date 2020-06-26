@@ -133,7 +133,6 @@ cloudinary.config(
     api_key = config('CLOUDINARY_API_KEY'),
     api_secret = config('CLOUDINARY_API_SECRET'),
 )
-cloudinary.VERSION = 'vsaasd'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -145,6 +144,3 @@ MEDIA_URL = '/media/'
 CLOUDINARY_URL = f'https://res.cloudinary.com/{config("CLOUDINARY_CLOUD_NAME")}/'
 
 django_heroku.settings(locals())
-
-
-        # 'res.cloudinary.com/dal1luubo/image/upload/v1593096291/dark_light-green_m9flm3.jpg",
