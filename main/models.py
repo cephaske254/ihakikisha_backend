@@ -139,7 +139,7 @@ class Rating(models.Model):
         return ratings
 
 
-@receiver(pre_save, sender=Product)
+@receiver(post_save, sender=Product)
 def generate_qr(sender, instance, **kwargs):
     upload_to = f'qr_codes/{instance.uuid}.png'
 
