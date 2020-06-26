@@ -167,7 +167,7 @@ def generate_qr(sender, instance, **kwargs):
 
     image_url = cloudinary_image
     instance.qr_code = image_url
-    os.remove(image_name)
+    os.remove(image_name) 
 
 
 @receiver(post_save)
