@@ -34,9 +34,10 @@ class ProductSerializer(serializers.ModelSerializer, ):
 
 
 class ProductRetrieveSerializer(serializers.ModelSerializer, ):
+    product_set = ProductSetSerializerMini()
     class Meta:
         model = Product
-        fields = ['uuid', 'manufactured', 'sold', 'qr_code', 'product_set']
+        fields = ['uuid', 'manufactured', 'sold', 'qr_code', 'product_set',]
         extra_kwargs = {"qr_code": {"read_only": True}}
 
 
