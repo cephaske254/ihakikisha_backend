@@ -165,8 +165,8 @@ def generate_qr(sender, instance, **kwargs):
         overwrite=True,
     )
 
-    image_url = cloudinary_image
-    instance.qr_code = image_url
+    # image_url = cloudinary_image
+    # instance.qr_code = image_url
 
 
 @receiver(post_save)
