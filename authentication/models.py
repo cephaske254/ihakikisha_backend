@@ -93,5 +93,3 @@ def create_profile(sender, instance, **kwargs):
 
     elif instance.user_type == 'M':
         profile = Manufacturer.objects.update_or_create(user = instance, phone=0, email=instance.email)
-
-

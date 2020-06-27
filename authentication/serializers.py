@@ -28,9 +28,16 @@ class UserSerializerNano(serializers.ModelSerializer):
 class TokenSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=100)
     password = serializers.CharField(max_length=255, write_only=True)
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        if email and password:
+            user = authenticate(request=self.context.get('request'),
+                                email=email, password=password)
 
-    def validate(self, data):
-        email = data.get('email', None)
-        password = data.get('password', None)
-        user = authenticate(email=email, password=password)
-        return user
+            if not user:
+                msg = ('Credentials Doesnt Match Our Records!')
+                raise serializers.ValidationError(msg, code='authorization')
+        attrs['user'] = user
+        return attrs
+
