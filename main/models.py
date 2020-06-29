@@ -121,7 +121,7 @@ class Package(BaseModel):
 
 
 class Rating(models.Model):
-    product = models.OneToOneField(
+    product_set = models.OneToOneField(
         ProductSet, on_delete=models.CASCADE, primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
     rating = models.PositiveIntegerField(null=False, blank=False)

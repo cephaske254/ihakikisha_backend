@@ -46,16 +46,9 @@ class DistributorProfile(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def post(self, request, *args, **kwargs):
-        try:
-            user = User.objects.get_by_natural_key(email=request.POST['email'])
-        except:
-            return Response(status=404, data={'non_field_errors':{'User Not Found!'}})
-        manufacturer = Manufacturer.objects.get(pk=request.user.pk)
-        try:
-            distributor = Distributor.objects.create(user=user, manufacturer=manufacturer)
-        except:
-            return Response(status=400, data={'non_field_errors':{'Distributor already registered!'}})
-        return Response(status=404, data=distributor)
+        def perform_create(self, serializer):
+
+            serializer.save()
         
 
 class DistributorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -98,7 +91,7 @@ class Ratings(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Rating.objects.all()
-    
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
