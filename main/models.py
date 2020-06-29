@@ -24,8 +24,7 @@ class BaseModel(models.Model):
 
 
 class Manufacturer(BaseModel):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='profile')
     name = models.CharField(max_length=255, null=False, blank=False)
     phone = models.CharField(blank=False, null=False,
                              max_length=13, validators=[validate_phone])
@@ -38,16 +37,15 @@ class Manufacturer(BaseModel):
 
 
 class Farmer(BaseModel):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True,related_name='profile_m')
     image = CloudinaryField(default='avatar.png')
 
 
 class Distributor(BaseModel):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True)
-    manufacturer = models.OneToOneField(
-        Manufacturer, on_delete=models.CASCADE, related_name='profile')
+        User, on_delete=models.CASCADE, primary_key=True, blank=True)
+    manufacturer = models.ForeignKey(
+        Manufacturer, on_delete=models.CASCADE, related_name='profile', blank=True)
 
     def __str__(self):
         return 'Distributor - %s %s' % (self.user.first_name, self.manufacturer)
@@ -70,7 +68,7 @@ class ProductSet(models.Model):
 
 
 class Product(BaseModel):
-    product_set = models.ForeignKey(ProductSet, on_delete=models.CASCADE)
+    product_set = models.ForeignKey(ProductSet, on_delete=models.CASCADE, related_name='products')
     qr_code = CloudinaryField(blank=True)
     sold = models.BooleanField(default=False)
     manufactured = models.DateField(auto_now_add=False, auto_now=False)

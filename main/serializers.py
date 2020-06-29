@@ -3,8 +3,7 @@ from .models import Distributor, Farmer, Manufacturer, Shop, Rating, Package, Pr
 from authentication.serializers import UserSerializerNano
 from authentication.models import User
 from cloudinary.models import CloudinaryField
-from django.conf import settings
-
+from django.core import serializers as django_serializer
 
 class ProductSetSerializer(serializers.ModelSerializer, ):
     class Meta:
@@ -54,7 +53,18 @@ class ManufacturerProfileSerializer(serializers.ModelSerializer):
         exclude = []
 
 
+class DistributorProfileSerializerMini(serializers.ModelSerializer):
+    class Meta:
+        model = Distributor
+        exclude = []
+        extra_kwargs = {
+            'manufacturer': {'required': False},
+            'user': {'required': False,},
+            }
+
+
 class DistributorProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializerNano()
     class Meta:
         model = Distributor
         exclude = []
@@ -76,3 +86,40 @@ class PackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Package
         exclude = []
+
+
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    profile = serializers.SerializerMethodField()
+    product_sets = serializers.SerializerMethodField()
+    products = serializers.SerializerMethodField()
+    distributors = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['id', 'first_name', 'last_name', 'user_type', 'profile', 'products','product_sets','distributors']
+
+    def get_profile(self, obj):
+        if obj.user_type == 'M':
+            query_set = Manufacturer.objects.get(pk=obj.pk)
+            return ManufacturerProfileSerializer(query_set, many=False).data
+
+        elif obj.user_type == 'D':
+            query_set = Distributor.objects.get(pk=obj.pk)
+            return DistributorProfileSerializerMini(query_set, many=False).data
+
+        if obj.user_type == 'F':
+            query_set = Farmer.objects.get(pk=obj.pk)
+            return FarmerProfileSerializer(query_set, many=False).data
+
+    def get_products(self, obj):
+        query_set = Product.objects.filter(product_set__manufacturer__user=obj.pk).count()
+        return query_set
+    
+    def get_product_sets(self, obj):
+        query_set = ProductSet.objects.filter(manufacturer__user=obj.pk).count()
+        return query_set
+
+    def get_distributors(self, obj):
+        query_set = Distributor.objects.filter(manufacturer=obj.pk).count()
+        return query_set
