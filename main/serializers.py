@@ -21,7 +21,7 @@ class ProductSetSerializerMini(serializers.ModelSerializer,):
     manufacturer = ManufacturerSerializerMini()
 
     class Meta:
-        fields = ['name', 'description', 'composition', 'manufacturer', 'image']
+        fields = ['id','name', 'description', 'composition', 'manufacturer', 'image']
         model = ProductSet
 
 
