@@ -8,6 +8,8 @@ from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticated
 
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+
+from django.db.models import Q 
 # Create your views here.
 
 class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -156,3 +158,11 @@ class MyDistributors(generics.ListAPIView):
 
         obj = get_object_or_404(queryset,manufacturer=self.request.user.id)
         return obj
+
+
+class SearchProducts(generics.ListAPIView):
+    serializer_class = serializers.ProductSetSerializer
+    permission_classes = (AllowAny,)
+    
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)

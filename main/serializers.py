@@ -91,15 +91,15 @@ class PackageSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    profile = serializers.SerializerMethodField()
+    company_profile = serializers.SerializerMethodField()
     product_sets = serializers.SerializerMethodField()
     products = serializers.SerializerMethodField()
     distributors = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'user_type', 'profile', 'products','product_sets','distributors']
+        fields = ['id', 'first_name', 'last_name', 'user_type', 'company_profile', 'products','product_sets','distributors']
 
-    def get_profile(self, obj):
+    def get_company_profile(self, obj):
         if obj.user_type == 'M':
             query_set = Manufacturer.objects.get(pk=obj.pk)
             return ManufacturerProfileSerializer(query_set, many=False).data

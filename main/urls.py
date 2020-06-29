@@ -32,4 +32,6 @@ urlpatterns = [
     path('my-product-sets/', views.MyProductsets.as_view()),
     path('my-products/', views.MyProducts.as_view()),
     path('my-distributors/', views.MyDistributors.as_view()),
+
+    path('search/', views.SearchProducts.as_view()),
 ]
