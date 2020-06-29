@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 
-from django.db.models import Q 
+from rest_framework import filters
 # Create your views here.
 
 class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
@@ -163,6 +163,7 @@ class MyDistributors(generics.ListAPIView):
 class SearchProducts(generics.ListAPIView):
     serializer_class = serializers.ProductSetSerializer
     permission_classes = (AllowAny,)
-    
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+
+    queryset = ProductSet.objects.all()
+    search_fields = ['name', 'manufacturer__name', 'composition', 'description']
+    filter_backends = (filters.SearchFilter,)

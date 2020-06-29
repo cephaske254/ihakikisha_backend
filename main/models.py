@@ -46,6 +46,7 @@ class Distributor(BaseModel):
         User, on_delete=models.CASCADE, primary_key=True, blank=True)
     manufacturer = models.ForeignKey(
         Manufacturer, on_delete=models.CASCADE, related_name='profile', blank=True)
+    
 
     def __str__(self):
         return 'Distributor - %s %s' % (self.user.first_name, self.manufacturer)
@@ -65,6 +66,9 @@ class ProductSet(models.Model):
 
     def __str__(self):
         return '%s by %s' % (self.name, self.manufacturer.name)
+
+    class Meta:
+        unique_together=('name',)
 
 
 class Product(BaseModel):
