@@ -11,6 +11,9 @@ from rest_framework.authtoken.models import Token
 from django.core.exceptions import PermissionDenied
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 
+
+from rest_framework import parsers, renderers
+
 # Create your views here.
 
 
@@ -26,17 +29,8 @@ class CustomAuthToken(authtoken.views.ObtainAuthToken):
     authentication_classes =(BasicAuthentication,)
 
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data, context={'request':request})
-        try:
-            serializer.is_valid(raise_exception=True)
-            user = serializer.validated_data
-            token, created = Token.objects.get_or_create(user=user)
-            return response.Response({
-                'token': token.key,
-                'uuid': user.uuid,
-                'user_id': user.pk,
-                'email': user.email,
-                'user_type': user.user_type,
-            })
-        except:
-            return response.Response({"status":HTTP_401_UNAUTHORIZED, "detail":"Password or Email Invalid!"})
+        serializer = self.serializer_class(data=request.data,context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return response.Response({'token': token.key, 'user_id':user.pk, 'user_type':user.user_type, 'email':user.email})

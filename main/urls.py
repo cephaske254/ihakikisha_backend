@@ -27,4 +27,11 @@ urlpatterns = [
     path('manufacturers/<pk>/', views.ManufacturerProfileDetail.as_view()),
     
     path('retrieve/<uuid>/', views.RetrieveProduct.as_view()),
+
+    path('my-profile/', views.Profile.as_view()),
+    path('my-product-sets/', views.MyProductsets.as_view()),
+    path('my-products/', views.MyProducts.as_view()),
+    path('my-distributors/', views.MyDistributors.as_view()),
+
+    path('search/', views.SearchProducts.as_view()),
 ]
