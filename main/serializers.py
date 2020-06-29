@@ -88,8 +88,6 @@ class PackageSerializer(serializers.ModelSerializer):
         exclude = []
 
 
-
-
 class ProfileSerializer(serializers.ModelSerializer):
     company_profile = serializers.SerializerMethodField()
     product_sets = serializers.SerializerMethodField()

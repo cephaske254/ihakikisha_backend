@@ -34,12 +34,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
 
     # Third-Party Apps Below
     'rest_framework',
     'rest_framework.authtoken',
     'cloudinary',
+    'corsheaders',
 
     # Local Apps Below
     'main.apps.MainConfig',
@@ -55,6 +55,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES':[
         'rest_framework.permissions.IsAuthenticated'
     ],
+    "DATE_FORMAT":"%a, %b %m %Y",
+
 }
 
 MIDDLEWARE = [

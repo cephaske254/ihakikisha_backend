@@ -62,7 +62,7 @@ class ProductSet(models.Model):
     description = models.TextField(null=False, blank=False)
     composition = models.TextField(null=False, blank=False)
     image = CloudinaryField(null=False, blank=False)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return '%s by %s' % (self.name, self.manufacturer.name)
@@ -115,14 +115,14 @@ class Package(BaseModel):
     shop = models.ForeignKey(
         Shop, on_delete=models.CASCADE, null=True, blank=True)
     delivered = models.BooleanField(default=False)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
 
     unique_together = ('products')
 
 
 class Rating(models.Model):
     product = models.OneToOneField(
-        Product, on_delete=models.CASCADE, primary_key=True)
+        ProductSet, on_delete=models.CASCADE, primary_key=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
     rating = models.PositiveIntegerField(null=False, blank=False)
     comment = models.TextField(null=True, blank=True)

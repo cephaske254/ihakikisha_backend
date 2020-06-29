@@ -98,10 +98,9 @@ class Ratings(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Rating.objects.all()
-
-    def post(self, request, *args, **kwargs):
-        request.data['user']=request.user.id
-        return self.create(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -136,6 +135,14 @@ class MyProductsets(generics.ListCreateAPIView):
 
         obj = get_object_or_404(queryset,manufacturer=self.request.user.id)
         return obj
+
+class MyProductsetsDetail(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = serializers.ProductSerializer
+    def get(self, request, name):
+        products = Product.objects.filter(product_set__name=name).all()
+        return Response (data = serializers.ProductSerializer(products, many=True).data)
+        
 
 
 class MyProducts(generics.ListCreateAPIView):
