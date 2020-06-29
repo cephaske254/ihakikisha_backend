@@ -120,8 +120,8 @@ class Package(BaseModel):
 
 class Rating(models.Model):
     product_set = models.ForeignKey(
-        ProductSet, on_delete=models.CASCADE, primary_key=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, blank=True)
+        ProductSet, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=False, primary_key=True)
     rating = models.PositiveIntegerField(null=False, blank=False)
     comment = models.TextField(null=True, blank=True)
 
