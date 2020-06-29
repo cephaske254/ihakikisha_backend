@@ -83,17 +83,15 @@ class Product(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.qr_code:
-            self.qr_code = f'qr_codes/{self.uuid}.png'
+            self.qr_code = f'{self.uuid}.png'
             super(Product, self).save(*args, **kwargs)
 
     def delete(self):
-        upload_to = f'qr_codes/{self.uuid}.png'
+        upload_to = f'{self.uuid}.png'
         image_name = f'{settings.MEDIA_ROOT}/{upload_to}'
         if os.path.isfile(image_name):
             os.remove(image_name)
-            print('deleted')
-
-        print(image_name)
+            cloudinary.uploader.destroy(self.uuid)
         super(Product, self).delete()
 
 
@@ -168,4 +166,3 @@ def generate_qr(sender, instance, **kwargs):
     )
 
     image_url = cloudinary_image
-    instance.qr_code = image_url
