@@ -14,7 +14,6 @@ class UserSerializerMini(serializers.ModelSerializer):
                 },
             }
 
-            
         
 class UserSerializerNano(serializers.ModelSerializer):
     class Meta:

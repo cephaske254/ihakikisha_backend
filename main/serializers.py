@@ -80,6 +80,9 @@ class RatingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
         exclude = []
+        extra_kwargs={
+            'user':{'required':False}
+        }
 
 
 class PackageSerializer(serializers.ModelSerializer):

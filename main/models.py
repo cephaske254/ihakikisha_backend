@@ -10,7 +10,7 @@ import qrcode
 from django.conf import settings
 import os
 
-from .validators import validate_phone
+from .validators import validate_phone, validate_manufactured
 
 import cloudinary
 from cloudinary.models import CloudinaryField
@@ -75,7 +75,7 @@ class Product(BaseModel):
     product_set = models.ForeignKey(ProductSet, on_delete=models.CASCADE, related_name='products')
     qr_code = CloudinaryField(blank=True)
     sold = models.BooleanField(default=False)
-    manufactured = models.DateField(auto_now_add=False, auto_now=False)
+    manufactured = models.DateField(auto_now_add=False, auto_now=False,validators=[validate_manufactured])
     date = models.DateField(auto_now_add=True)
 
     def __str__(self):
@@ -121,7 +121,7 @@ class Package(BaseModel):
 class Rating(models.Model):
     product_set = models.ForeignKey(
         ProductSet, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, unique=False, primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=False)
     rating = models.PositiveIntegerField(null=False, blank=False)
     comment = models.TextField(null=True, blank=True)
 
