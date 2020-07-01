@@ -33,6 +33,17 @@ class ProductSerializer(serializers.ModelSerializer, ):
     class Meta:
         model = Product
         fields = '__all__'
+        extra_kwargs={
+            'product_set':{'required':True},
+            'manufactured':{'required':True},
+            'expires':{'required':True},
+        }
+
+
+class ProductBulkSerializer(serializers.ModelSerializer, ):
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 
 class ProductRetrieveSerializer(serializers.ModelSerializer, ):

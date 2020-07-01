@@ -28,3 +28,10 @@ def validate_manufactured(value):
         raise ValidationError(
         'Future dates are not allowed!'
     )
+def validate_expires(value):
+    date_value = datetime.strptime(str(value), "%Y-%m-%d")
+    present = datetime.now()
+    if date_value.date() < present.date():
+        raise ValidationError(
+        'Past dates are not allowed!'
+    )

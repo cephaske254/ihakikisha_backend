@@ -8,6 +8,7 @@ from rest_framework.permissions import AllowAny,IsAuthenticated, IsAuthenticated
 
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
+from rest_framework import status
 
 from rest_framework import filters
 # Create your views here.
@@ -23,7 +24,7 @@ class ProductSets(generics.ListCreateAPIView):
     queryset = ProductSet.objects.all()
     
     def perform_create(self, serializer):
-        manufacturer = get_object_or_404(Manufacturer.objects.get(pk=self.request.user.id))
+        manufacturer = Manufacturer.objects.get(pk=self.request.user.id)
         serializer.save(manufacturer=manufacturer)
     
 
@@ -35,6 +36,20 @@ class Products(generics.ListCreateAPIView):
 class ProductDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProductSerializer
     queryset = Product.objects.all()
+
+class CreateBulkProducts(generics.CreateAPIView):
+    serializer_class = serializers.ProductBulkSerializer
+    queryset = Product.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data,list))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data[0])
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    def perform_create(self, serializer):
+        serializer.save(product_set=ProductSet.objects.get(name=self.request.data[0].get('product_set_name')))
 
 
 class RetrieveProduct(generics.RetrieveAPIView):
