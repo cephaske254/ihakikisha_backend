@@ -6,7 +6,7 @@ urlpatterns = [
     path('shops/<pk>/',views.ShopsDetail.as_view()),
     
     path('ratings/',views.Ratings.as_view()),
-    path('ratings/<pk>/',views.RatingsDetail.as_view()),
+    path('ratings/<product_set_id>/',views.RatingsDetail.as_view()),
 
     path('packages/',views.Packages.as_view()),
     path('packages/<pk>/',views.PackageDetail.as_view()),

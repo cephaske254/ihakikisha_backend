@@ -9,6 +9,9 @@ class ProductSetSerializer(serializers.ModelSerializer, ):
     class Meta:
         model = ProductSet
         fields = '__all__'
+        extra_kwargs={
+            'manufacturer':{'required':False}
+        }
 
 class ManufacturerSerializerMini(serializers.ModelSerializer,):
 

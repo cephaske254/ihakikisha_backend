@@ -22,6 +22,10 @@ class ProductSets(generics.ListCreateAPIView):
     permission_classes=(IsAuthenticatedOrReadOnly,)
     queryset = ProductSet.objects.all()
     
+    def perform_create(self, serializer):
+        manufacturer = get_object_or_404(Manufacturer.objects.get(pk=self.request.user.id))
+        serializer.save(manufacturer=manufacturer)
+    
 
 class Products(generics.ListCreateAPIView):
     serializer_class = serializers.ProductSerializer
@@ -45,10 +49,9 @@ class DistributorProfile(generics.ListCreateAPIView):
     queryset = Distributor.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
-    def post(self, request, *args, **kwargs):
-        def perform_create(self, serializer):
-
-            serializer.save()
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(user=user)
         
 
 class DistributorProfileDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -96,10 +99,15 @@ class Ratings(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class RatingsDetail(generics.RetrieveUpdateDestroyAPIView):
+class RatingsDetail(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsSerializer
     queryset = Rating.objects.all()
-    
+
+    def get_queryset(self):
+        id = self.kwargs['product_set_id']
+        return Rating.objects.filter(product_set=id)
+
+
 
 class Packages(generics.ListCreateAPIView):
     serializer_class = serializers.PackageSerializer
@@ -163,6 +171,7 @@ class MyDistributors(generics.ListAPIView):
 class SearchProducts(generics.ListAPIView):
     serializer_class = serializers.ProductSetSerializer
     permission_classes = (AllowAny,)
+    
 
     queryset = ProductSet.objects.all()
     search_fields = ['name', 'manufacturer__name', 'composition', 'description']
