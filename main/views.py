@@ -107,9 +107,7 @@ class RatingsDetail(generics.ListCreateAPIView):
         id = self.kwargs['product_set_id']
         return Rating.objects.filter(product_set=id)
 
-
-
-class Packages(generics.ListCreateAPIView):
+class Packages(generics.ListAPIView):
     serializer_class = serializers.PackageSerializer
     queryset = Package.objects.all()
     
