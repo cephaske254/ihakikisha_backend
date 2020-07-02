@@ -5,14 +5,6 @@ from authentication.models import User
 from cloudinary.models import CloudinaryField
 from django.core import serializers as django_serializer
 
-class ProductSetSerializer(serializers.ModelSerializer, ):
-    class Meta:
-        model = ProductSet
-        fields = '__all__'
-        extra_kwargs={
-            'manufacturer':{'required':False}
-        }
-
 class ManufacturerSerializerMini(serializers.ModelSerializer,):
 
     class Meta:
@@ -44,7 +36,19 @@ class ManufacturerStatsSerializer(serializers.ModelSerializer):
     def get_date_joined(self, obj):
         return User.objects.get(pk=obj.pk).date_joined
 
+class ProductSetSerializer(serializers.ModelSerializer, ):
+    class Meta:
+        model = ProductSet
+        fields = '__all__'
+        extra_kwargs={
+            'manufacturer':{'required':False}
+        }
 
+class ProductSetSerializerDetail(serializers.ModelSerializer, ):
+    manufacturer = ManufacturerSerializerMini()
+    class Meta:
+        model = ProductSet
+        exclude = []
 
 class ProductSetSerializerMini(serializers.ModelSerializer,):
     manufacturer = ManufacturerSerializerMini()

@@ -190,7 +190,7 @@ class MyDistributors(generics.ListAPIView):
 
 
 class SearchProducts(generics.ListAPIView):
-    serializer_class = serializers.ProductSetSerializer
+    serializer_class = serializers.ProductSetSerializerDetail
     permission_classes = (AllowAny,)
     
 
