@@ -37,4 +37,5 @@ urlpatterns = [
     path('my-distributors/', views.MyDistributors.as_view()),
 
     path('search/', views.SearchProducts.as_view()),
+    path('statistics/', views.ManufacturerStats.as_view())
 ]

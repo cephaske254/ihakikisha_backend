@@ -21,6 +21,7 @@ class User(BaseAbstractModel, PermissionsMixin):
     staff = models.BooleanField(default=False) # a admin user; non super-user
     admin = models.BooleanField(default=False) # a superuser
     superuser = models.BooleanField(default=False) # a superuser
+    date_joined = models.DateField(auto_now_add=True) # a superuser
     USER_TYPE_CHOICES =(
         ('A', 'admin'),
         ('M','manufacturer'),

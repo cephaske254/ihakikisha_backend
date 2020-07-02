@@ -19,6 +19,32 @@ class ManufacturerSerializerMini(serializers.ModelSerializer,):
         model = Manufacturer
         fields = ['name', 'phone', 'email', 'location', 'logo']
 
+class ManufacturerStatsSerializer(serializers.ModelSerializer):
+    products_count = serializers.SerializerMethodField()
+    distributor_count = serializers.SerializerMethodField()
+    product_set_count = serializers.SerializerMethodField()
+    reviews_count = serializers.SerializerMethodField()
+    date_joined = serializers.SerializerMethodField()
+    class Meta:
+        model = Manufacturer
+        fields = ['products_count','distributor_count','product_set_count','reviews_count','date_joined']
+
+    def get_products_count(self, obj):
+        return Product.objects.filter(product_set__manufacturer__pk=obj.pk).count()
+
+    def get_distributor_count(self, obj):
+        return Distributor.objects.filter(manufacturer=obj.pk).count()
+
+    def get_product_set_count(self, obj):
+        return ProductSet.objects.filter(manufacturer=obj.pk).count()
+
+    def get_reviews_count(self, obj):
+        return Rating.objects.filter(product_set__manufacturer=obj.pk).count()
+
+    def get_date_joined(self, obj):
+        return User.objects.get(pk=obj.pk).date_joined
+
+
 
 class ProductSetSerializerMini(serializers.ModelSerializer,):
     manufacturer = ManufacturerSerializerMini()
@@ -98,6 +124,13 @@ class RatingsSerializer(serializers.ModelSerializer):
             'user':{'required':False}
         }
 
+class RatingsDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializerNano()
+    
+    class Meta:
+        model = Rating
+        fields = ['id', 'rating', 'comment', 'product_set','user']
+    
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:

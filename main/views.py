@@ -84,6 +84,14 @@ class ManufacturerProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Manufacturer.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+class ManufacturerStats(generics.ListAPIView):
+    serializer_class = serializers.ManufacturerStatsSerializer
+    queryset = Manufacturer.objects.all()
+
+    def get_queryset(self):
+        manufacturer = self.request.user.id
+        return Manufacturer.objects.filter(pk=manufacturer)
+
 
 class FarmerProfile(generics.ListCreateAPIView):
     serializer_class = serializers.FarmerProfileSerializer
@@ -114,8 +122,8 @@ class Ratings(generics.ListCreateAPIView):
         serializer.save(user=self.request.user)
 
 
-class RatingsDetail(generics.ListCreateAPIView):
-    serializer_class = serializers.RatingsSerializer
+class RatingsDetail(generics.ListAPIView):
+    serializer_class = serializers.RatingsDetailSerializer
     queryset = Rating.objects.all()
 
     def get_queryset(self):
