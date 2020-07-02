@@ -5,6 +5,8 @@ from authentication.models import User
 from cloudinary.models import CloudinaryField
 from django.core import serializers as django_serializer
 
+from statistics import mean
+
 class ManufacturerSerializerMini(serializers.ModelSerializer,):
 
     class Meta:
@@ -129,12 +131,46 @@ class RatingsSerializer(serializers.ModelSerializer):
         }
 
 class RatingsDetailSerializer(serializers.ModelSerializer):
-    user = UserSerializerNano()
     
     class Meta:
         model = Rating
         fields = ['id', 'rating', 'comment', 'product_set','user']
-    
+
+class RatingsStatsSerializer(serializers.ModelSerializer):
+    comment_count = serializers.SerializerMethodField()
+    null_comment_count = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
+    review_sum = serializers.SerializerMethodField()
+    review_average = serializers.SerializerMethodField()
+    product_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ProductSet
+        fields=['id', 'comment_count','null_comment_count','review_count','review_sum','review_average','product_set']
+
+    def get_comment_count(self, obj):
+        return Rating.objects.filter(product_set=obj.pk, comment__isnull=False).count()
+
+    def get_null_comment_count(self, obj):
+        return Rating.objects.filter(product_set=obj.pk, comment__isnull=True).count()
+
+    def get_review_count(self, obj):
+        return Rating.objects.filter(product_set=obj.pk).count()
+
+    def get_review_sum(self, obj):
+        reviews = Rating.objects.filter(product_set=obj.pk).all()
+        numbers = [item.rating for item in reviews] or [0]
+        return sum(numbers)
+
+    def get_review_average(self, obj):
+        reviews = Rating.objects.filter(product_set=obj.pk).all()
+        numbers = [item.rating for item in reviews] or [0]
+        return round(mean(numbers),2)
+
+    def get_product_set(self, obj):
+        return ProductSetSerializer(ProductSet.objects.get(pk=obj.id)).data
+            
+
 
 class PackageSerializer(serializers.ModelSerializer):
     class Meta:

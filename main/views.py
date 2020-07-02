@@ -130,6 +130,16 @@ class RatingsDetail(generics.ListAPIView):
         id = self.kwargs['product_set_id']
         return Rating.objects.filter(product_set=id)
 
+
+
+class RatingsStats(generics.ListAPIView):
+    serializer_class = serializers.RatingsStatsSerializer
+    queryset = Rating.objects.all()
+
+    def get_queryset(self):
+        id = self.kwargs['product_set_id']
+        return ProductSet.objects.filter(pk=id)
+
 class Packages(generics.ListAPIView):
     serializer_class = serializers.PackageSerializer
     queryset = Package.objects.all()
