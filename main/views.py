@@ -117,6 +117,7 @@ class Ratings(generics.ListCreateAPIView):
     serializer_class = serializers.RatingsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Rating.objects.all()
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -125,6 +126,7 @@ class Ratings(generics.ListCreateAPIView):
 class RatingsDetail(generics.ListAPIView):
     serializer_class = serializers.RatingsDetailSerializer
     queryset = Rating.objects.all()
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         id = self.kwargs['product_set_id']
@@ -135,6 +137,7 @@ class RatingsDetail(generics.ListAPIView):
 class RatingsStats(generics.ListAPIView):
     serializer_class = serializers.RatingsStatsSerializer
     queryset = Rating.objects.all()
+    permission_classes = (AllowAny,)
 
     def get_queryset(self):
         id = self.kwargs['product_set_id']

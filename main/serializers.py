@@ -146,7 +146,7 @@ class RatingsStatsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductSet
-        fields=['id', 'comment_count','null_comment_count','review_count','review_sum','review_average','product_set']
+        fields=['comment_count','null_comment_count','review_count','review_sum','review_average','product_set']
 
     def get_comment_count(self, obj):
         return Rating.objects.filter(product_set=obj.pk, comment__isnull=False).count()
