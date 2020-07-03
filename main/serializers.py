@@ -39,12 +39,23 @@ class ManufacturerStatsSerializer(serializers.ModelSerializer):
         return User.objects.get(pk=obj.pk).date_joined
 
 class ProductSetSerializer(serializers.ModelSerializer, ):
+    review_count = serializers.SerializerMethodField()
+    review_average = serializers.SerializerMethodField()
     class Meta:
         model = ProductSet
         fields = '__all__'
         extra_kwargs={
             'manufacturer':{'required':False}
         }
+
+
+    def get_review_count(self, obj):
+        return Rating.objects.filter(product_set=obj.pk).count()
+
+    def get_review_average(self, obj):
+        reviews = Rating.objects.filter(product_set=obj.pk).all()
+        numbers = [item.rating for item in reviews] or [0]
+        return round(mean(numbers),2)
 
 class ProductSetSerializerDetail(serializers.ModelSerializer, ):
     manufacturer = ManufacturerSerializerMini()
