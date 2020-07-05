@@ -4,10 +4,6 @@ from . import views
 urlpatterns = [
     path('shops/',views.Shops.as_view()),
     path('shops/<pk>/',views.ShopsDetail.as_view()),
-    
-    path('ratings/',views.Ratings.as_view()),
-    path('ratings/<product_set_id>/',views.RatingsDetail.as_view()),
-    path('ratings/<product_set_id>/stats/',views.RatingsStats.as_view()),
 
     path('packages/',views.Packages.as_view()),
     path('packages/<pk>/',views.PackageDetail.as_view()),
@@ -32,11 +28,22 @@ urlpatterns = [
 
     path('my-profile/', views.Profile.as_view()),
     path('my-product-sets/', views.MyProductsets.as_view()),
+    path('my-product-sets/<name>/ratings/', views.MyProductsetsRating.as_view()),
+    path('ratings/highlights/', views.HiglightRatingList.as_view()),
+    path('ratings/highlights/<pk>/', views.HighlightRating.as_view()),
     path('my-product-sets/<name>/', views.MyProductsetsDetail.as_view()),
 
     path('my-products/', views.MyProducts.as_view()),
     path('my-distributors/', views.MyDistributors.as_view()),
+    path('my-distributors/add/<email>/', views.MyDistributorsAdd.as_view()),
 
     path('search/', views.SearchProducts.as_view()),
-    path('statistics/', views.ManufacturerStats.as_view())
+    path('statistics/', views.ManufacturerStats.as_view()),
+
+
+
+    path('ratings/',views.Ratings.as_view()),
+    path('ratings/<product_set_id>/',views.RatingsDetail.as_view()),
+    path('ratings/<product_set_id>/stats/',views.RatingsStats.as_view()),
+    
 ]

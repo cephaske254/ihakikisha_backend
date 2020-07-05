@@ -26,30 +26,33 @@ class BaseModel(models.Model):
 class Manufacturer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='profile')
     name = models.CharField(max_length=255, null=False, blank=False)
-    phone = models.CharField(blank=False, null=False,
-                             max_length=13, validators=[validate_phone])
+    phone = models.CharField(blank=False, null=True,
+                             max_length=13, validators=[])
     location = models.CharField(max_length=255, null=False, blank=False)
     email = models.EmailField(max_length=255)
     logo = CloudinaryField(default='avatar.png')
 
     def __str__(self):
-        return 'Manufacturer - %s %s' % (self.name, self.email)
+        return 'Manufacturer - %s' % (self.name)
 
 
 class Farmer(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE,primary_key=True,related_name='profile_m')
     image = CloudinaryField(default='avatar.png')
 
+    def __str__(self):
+        return self.user.first_name
+
 
 class Distributor(BaseModel):
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, primary_key=True, blank=True)
+        Farmer, on_delete=models.CASCADE, primary_key=True, blank=True, related_name='distrib')
     manufacturer = models.ForeignKey(
-        Manufacturer, on_delete=models.CASCADE, related_name='profile', blank=True)
+        Manufacturer, on_delete=models.CASCADE, blank=True)
     
 
     def __str__(self):
-        return 'Distributor - %s %s' % (self.user.first_name, self.manufacturer)
+        return 'Distributor %s of %s' % (self.user, self.manufacturer)
 
     class Meta:
         unique_together = (('user', 'manufacturer'))
@@ -69,6 +72,8 @@ class ProductSet(models.Model):
 
     class Meta:
         unique_together=('name',)
+
+
 
 
 class Product(BaseModel):
@@ -121,23 +126,14 @@ class Package(BaseModel):
 
 class Rating(models.Model):
     product_set = models.ForeignKey(
-        ProductSet, on_delete=models.CASCADE)
+        ProductSet, on_delete=models.CASCADE, related_name='ratings')
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=False)
     rating = models.PositiveIntegerField(null=False, blank=False)
     comment = models.TextField(null=True, blank=True)
+    date = models.DateField(auto_now_add=True)
+    highlight = models.BooleanField(default=False)
 
     unique_together = 'user'
-
-    @classmethod
-    def get_products_rating(cls, product_id):
-        results = cls.get_products_rating(product_id)
-        ratings = []
-        if results is not None:
-            for rating in results:
-                ratings.append(int(rating.rating))
-        else:
-            ratings.append(0)
-        return ratings
 
 
 @receiver(post_save, sender=Product)

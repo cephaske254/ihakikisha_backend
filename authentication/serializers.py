@@ -13,16 +13,18 @@ class UserSerializerMini(serializers.ModelSerializer):
                 'write_only': True, 'validators':[validate_password]
                 },
             }
+         
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
 
-        
+
 class UserSerializerNano(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'first_name','last_name','email']
+
     
-    def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
 
 class TokenSerializer(serializers.Serializer):
     email = serializers.CharField(max_length=100)

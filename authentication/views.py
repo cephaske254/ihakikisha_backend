@@ -23,6 +23,11 @@ class Register(generics.CreateAPIView):
     authentication_classes =(BasicAuthentication,)
 
 
+class UserDetail(generics.RetrieveUpdateAPIView):
+    serializer_class = serializers.UserSerializerNano
+    queryset = User.objects.all()
+    
+
 class CustomAuthToken(authtoken.views.ObtainAuthToken):
     serializer_class = serializers.TokenSerializer
     permission_classes = (AllowAny,)

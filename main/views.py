@@ -12,7 +12,6 @@ from rest_framework import status
 
 from rest_framework import filters
 # Create your views here.
-
 class ProductSetDetails(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.ProductSetSerializer
     permission_classes=(IsAuthenticatedOrReadOnly,)
@@ -22,7 +21,10 @@ class ProductSets(generics.ListCreateAPIView):
     serializer_class = serializers.ProductSetSerializer
     permission_classes=(IsAuthenticatedOrReadOnly,)
     queryset = ProductSet.objects.all()
-    
+    ordering=['ratings']
+    filter_backends = [filters.OrderingFilter]
+
+
     def perform_create(self, serializer):
         manufacturer = Manufacturer.objects.get(pk=self.request.user.id)
         serializer.save(manufacturer=manufacturer)
@@ -84,6 +86,9 @@ class ManufacturerProfileDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Manufacturer.objects.all()
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
 class ManufacturerStats(generics.ListAPIView):
     serializer_class = serializers.ManufacturerStatsSerializer
     queryset = Manufacturer.objects.all()
@@ -142,6 +147,7 @@ class RatingsStats(generics.ListAPIView):
     def get_queryset(self):
         id = self.kwargs['product_set_id']
         return ProductSet.objects.filter(pk=id)
+        
 
 class Packages(generics.ListAPIView):
     serializer_class = serializers.PackageSerializer
@@ -164,22 +170,44 @@ class Profile(generics.RetrieveAPIView):
 class MyProductsets(generics.ListCreateAPIView):
     queryset = ProductSet.objects.all()
     serializer_class = serializers.ProductSetSerializer
+    def get_queryset(self):
+        user = self.request.user
+        return self.queryset.filter(manufacturer=user.id)
 
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
 
-        obj = get_object_or_404(queryset,manufacturer=self.request.user.id)
-        return obj
+class MyProductsetsRating(generics.ListAPIView):
+    def get(self, request, name):
+        products = Rating.objects.filter(product_set__name=name).all()
+        return Response (data = serializers.ProductsetsRatingSerializer(products, many=True).data)
+
+class HighlightRating(generics.RetrieveUpdateAPIView):
+    serializer_class = serializers.RatingsHighlightSerializer
+    queryset = Rating.objects.all()
+    def get_queryset(self):
+        id = self.kwargs['pk']
+        return Rating.objects.filter(pk=id)
+
+    def perform_update(self, serializer):
+        if self.get_object().highlight == False:
+            serializer.save(highlight=True)
+        else:
+            serializer.save(highlight=False)
+
+
+class HiglightRatingList(generics.ListAPIView):
+    serializer_class = serializers.ProductsetsRatingSerializer
+    queryset = Rating.objects.all()
+    def get_queryset(self):
+        return self.queryset.filter(product_set__manufacturer_id=self.request.user.id, highlight=True)
 
 class MyProductsetsDetail(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
+
     def get(self, request, name):
         products = Product.objects.filter(product_set__name=name).all()
         return Response (data = serializers.ProductSerializer(products, many=True).data)
         
-
-
 class MyProducts(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
@@ -191,21 +219,35 @@ class MyProducts(generics.ListCreateAPIView):
         return obj
 
 
-class MyDistributors(generics.ListAPIView):
+class MyDistributors(generics.ListCreateAPIView):
+    queryset = Farmer.objects.all()
+    serializer_class = serializers.MyDistributorProfileSerializer
+    
+    def get_queryset(self):
+        return self.queryset.filter(distrib__manufacturer=self.request.user.id)
+
+class MyDistributorsAdd(generics.CreateAPIView):
     queryset = Distributor.objects.all()
     serializer_class = serializers.DistributorProfileSerializer
+    
+    def post(self, request, email, *args, **kwargs):
+        user = Farmer.objects.filter(user__email=email).first()
+        manufacturer = Manufacturer.objects.filter(pk=self.request.user.id).first()
+        
+        if user is not None and manufacturer is not None:
+            exists = self.queryset.filter(user = user.pk).exists()
+            if not exists:
+                distributor = Distributor.objects.create(user=user, manufacturer=manufacturer).save()
+                return Response(data=serializers.DistributorProfileSerializer(distributor).data, status=201)
 
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        obj = get_object_or_404(queryset,manufacturer=self.request.user.id)
-        return obj
+        return Response(status=400, data={'non_field_errors':['Could not complete your request.Check if you provided a matching email']})
+        
+        
 
 
 class SearchProducts(generics.ListAPIView):
-    serializer_class = serializers.ProductSetSerializerDetail
+    serializer_class = serializers.ProductSerializer
     permission_classes = (AllowAny,)
-    
 
     queryset = ProductSet.objects.all()
     search_fields = ['name', 'manufacturer__name', 'composition', 'description']

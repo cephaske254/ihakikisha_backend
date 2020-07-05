@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Distributor, Farmer, Manufacturer, Shop, Rating, Package, ProductSet, Product
-from authentication.serializers import UserSerializerNano
+from authentication.serializers import UserSerializerNano, UserSerializerMini
 from authentication.models import User
 from cloudinary.models import CloudinaryField
 from django.core import serializers as django_serializer
@@ -38,24 +38,6 @@ class ManufacturerStatsSerializer(serializers.ModelSerializer):
     def get_date_joined(self, obj):
         return User.objects.get(pk=obj.pk).date_joined
 
-class ProductSetSerializer(serializers.ModelSerializer, ):
-    review_count = serializers.SerializerMethodField()
-    review_average = serializers.SerializerMethodField()
-    class Meta:
-        model = ProductSet
-        fields = '__all__'
-        extra_kwargs={
-            'manufacturer':{'required':False}
-        }
-
-
-    def get_review_count(self, obj):
-        return Rating.objects.filter(product_set=obj.pk).count()
-
-    def get_review_average(self, obj):
-        reviews = Rating.objects.filter(product_set=obj.pk).all()
-        numbers = [item.rating for item in reviews] or [0]
-        return round(mean(numbers),2)
 
 class ProductSetSerializerDetail(serializers.ModelSerializer, ):
     manufacturer = ManufacturerSerializerMini()
@@ -83,6 +65,42 @@ class ProductSerializer(serializers.ModelSerializer, ):
         }
 
 
+class ProductsetsRatingSerializer(serializers.ModelSerializer):
+    user = UserSerializerNano()
+    avatar = serializers.SerializerMethodField()
+    product_set = ProductSetSerializerMini()
+    class Meta:
+        model = Rating
+        fields = '__all__'
+    
+    def get_avatar(self, obj):
+        try:
+             return str(Farmer.objects.get(user=obj.user).image)
+        except:
+            return str(Manufacturer.objects.get(pk=obj.user).logo)
+
+
+class ProductSetSerializer(serializers.ModelSerializer, ):
+    manufacturer = ManufacturerSerializerMini(read_only=True)
+    review_count = serializers.SerializerMethodField()
+    review_average = serializers.SerializerMethodField()
+    class Meta:
+        model = ProductSet
+        fields = '__all__'
+        extra_kwargs={
+            'manufacturer':{'required':False}
+        }
+
+
+    def get_review_count(self, obj):
+        return Rating.objects.filter(product_set=obj.pk).count()
+
+    def get_review_average(self, obj):
+        reviews = Rating.objects.filter(product_set=obj.pk).all()
+        numbers = [item.rating for item in reviews] or [0]
+        return round(mean(numbers),2)
+
+
 class ProductBulkSerializer(serializers.ModelSerializer, ):
     class Meta:
         model = Product
@@ -98,7 +116,6 @@ class ProductRetrieveSerializer(serializers.ModelSerializer, ):
 
 
 class FarmerProfileSerializer(serializers.ModelSerializer, ):
-
     class Meta:
         model = Farmer
         exclude = []
@@ -108,6 +125,9 @@ class ManufacturerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manufacturer
         exclude = []
+        extra_kwargs = {
+            'user': {'required': False,},
+            }
 
 
 class DistributorProfileSerializerMini(serializers.ModelSerializer):
@@ -117,14 +137,25 @@ class DistributorProfileSerializerMini(serializers.ModelSerializer):
         extra_kwargs = {
             'manufacturer': {'required': False},
             'user': {'required': False,},
-            }
+            }            
+
+
+class MyDistributorProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializerNano()
+    class Meta:
+        model = Farmer
+        exclude = []
+        
 
 
 class DistributorProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializerNano()
+    user = UserSerializerNano(read_only=True)
     class Meta:
         model = Distributor
         exclude = []
+        extra_kwargs={
+            'manufacturer':{'required':False}
+        }
 
 
 class ShopSerializer(serializers.ModelSerializer):
@@ -139,6 +170,17 @@ class RatingsSerializer(serializers.ModelSerializer):
         exclude = []
         extra_kwargs={
             'user':{'required':False}
+        }
+
+class RatingsHighlightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        exclude = []
+        extra_kwargs={
+            'user':{'read_only':True},
+            'rating':{'read_only':True},
+            'product_set':{'read_only':True},
+            'comment':{'read_only':True},
         }
 
 class RatingsDetailSerializer(serializers.ModelSerializer):

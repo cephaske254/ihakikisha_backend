@@ -61,17 +61,6 @@ class User(BaseAbstractModel, PermissionsMixin):
         return user
 
     @classmethod
-    def edit_user(cls,user_id, first_name, last_name, email):
-        user = cls.get_user_by_id(user_id)
-        if user:
-            user.first_name = first_name or user.first_name
-            user.last_name = first_name or user.last_name
-            user.email = email or user.email
-            user.save()
-            return user
-        return None
-    
-    @classmethod
     def get_user_by_id(cls, user_id):
         try:
             user = cls.objects.get(pk=user_id)
@@ -79,18 +68,15 @@ class User(BaseAbstractModel, PermissionsMixin):
         except:
             return None
 
-    def save(self, *args, **kwargs):
-        if self.admin == False or self.superuser == False:
-            self.set_password(self.password)
-        super(User, self).save(*args, **kwargs)
-
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, **kwargs):
     from main.models import  Manufacturer, Farmer, Distributor
+    try:
+        if instance.user_type == 'F':
+            profile = Farmer.objects.update_or_create(user = instance)
 
-    if instance.user_type == 'F':
-        profile = Farmer.objects.update_or_create(user = instance)
-
-    elif instance.user_type == 'M':
-        profile = Manufacturer.objects.update_or_create(user = instance, phone=0, email=instance.email)
+        elif instance.user_type == 'M':
+            profile = Manufacturer.objects.update_or_create(user = instance, phone='', email=instance.email)
+    except:
+        pass
