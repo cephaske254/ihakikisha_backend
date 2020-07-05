@@ -246,9 +246,8 @@ class MyDistributorsAdd(generics.CreateAPIView):
 
 
 class SearchProducts(generics.ListAPIView):
-    serializer_class = serializers.ProductSerializer
+    serializer_class = serializers.ProductSetSerializer
     permission_classes = (AllowAny,)
-
     queryset = ProductSet.objects.all()
     search_fields = ['name', 'manufacturer__name', 'composition', 'description']
     filter_backends = (filters.SearchFilter,)
